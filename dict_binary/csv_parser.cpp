@@ -90,6 +90,7 @@ public:
         if (_buf == MAP_FAILED || _buf == NULL) {
             Throw("failed to map");
         }
+	std::cout << _file_size << std::endl;
     }
 
     char * get_buf() {
@@ -135,14 +136,16 @@ public:
             read_len = pos - _cur - 1;
 
             //val.assign(_buf + _cur + 1, pos - _cur);
-            _cur = pos + 1;
+            ++pos;
         } else {
             read_len = _buf[pos] - '0';
-            _cur += read_len + 1;
+            pos += read_len + 1;
         }
-        if (read_len + 1 + _cur >= _file_size) {
+        if (read_len + 1 + _cur > _file_size) {
+	    std::cout << read_len + 1 + _cur << std::endl;
             Throw("read overflow");
         }
+	_cur = pos;
         val.assign(_buf + _cur + 1, read_len);
         return RET_OK;
     }
@@ -1096,6 +1099,7 @@ public:
         int buf_len = 0;
         _reader.readline(buf, buf_len);
         line.assign(buf, buf_len);
+	std::cout << line << std::endl;
         std::vector<std::string> arr;
         Util::split(line, ",", arr);
         if (arr.size() == 0) {
@@ -1109,6 +1113,7 @@ public:
         }
         _reader.readline(buf, buf_len);
         line.assign(buf, buf_len);
+	std::cout << line << std::endl;
         arr.clear();
         Util::split(line, ",", arr);
         if (arr.size() != _col_metas.size()) {
@@ -1213,8 +1218,8 @@ int main() {
 	try {
 	    //test_csv();
 	    //test_binary();
-        //test_csv_row();
-        test_read_row_binary();
+            //test_csv_row();
+            test_read_row_binary();
 	} catch (RTTBinaryDict::RTTException& e) {
 		std::cout << e.info() << std::endl;
 	}
