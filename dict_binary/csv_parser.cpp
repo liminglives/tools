@@ -6,6 +6,11 @@
 #include <stdio.h>
 #include <exception>
 #include <chrono>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #define Throw(x) do{throw RTTException(__FILE__,__LINE__,__FUNCTION__,(x));} while (0)
 
@@ -17,7 +22,12 @@ enum RETCODE {
 	RET_ERROR,
 	RET_READERROR,
 	RET_EMPTY,
+	RET_READEND,
 };
+
+using int16 = short;
+using int32 = int;
+using int64 = long long;
 
 enum DataType {
     Type_SHORT = 0,	 // size 2
@@ -38,8 +48,7 @@ enum DataType {
 class RTTException {
 public:
     RTTException(const std::string& file, int line, const std::string& func, const std::string& info="") :
-	       _file(file), _line(line), _func(func), _info(info) {}
-    std::string info() {
+	       _file(file), _line(line), _func(func), _info(info) {} std::string info() {
 		std::string ret;
 		ret.append(_file);
 		ret.append(":");
@@ -55,6 +64,98 @@ private:
     int _line;
     std::string _func;
     std::string _info;
+};
+
+
+template <class T>
+int get_datatype_size() {
+    return sizeof(T);
+}
+
+class BinaryMMapReader {
+public:
+    BinaryMMapReader() {}
+    int init(const std::string& file) {
+        _file = file;
+        struct stat st;
+        if (stat(_file.c_str(), &st) == -1) {
+            Throw("failed to get file stat, " + _file);
+        }
+        fd = open(_file.c_str(), O_RDONLY);
+        if (fd == -1) {
+            Throw("failed to open file " + _file);
+        }
+        _file_size = st.st_size;
+        _buf = static_cast<char *>(mmap(NULL, _file_size, PROT_READ, MAP_PRIVATE, fd, 0));
+        if (_buf == MAP_FAILED || _buf == NULL) {
+            Throw("failed to map");
+        }
+    }
+
+    char * get_buf() {
+        return _buf;
+    }
+    
+    int readline(char* &buf, int& len) {
+        unsigned long long pos = _cur;
+        buf = _buf + _cur;
+        len = 0;
+        while (pos < _file_size) {
+            if (_buf[pos] == '\n') {
+                break;
+            }
+            ++pos;
+        }
+        len = pos - _cur;
+        if (len > 0 && buf[pos - 1] == '\r') {
+            --len;
+        }
+
+        _cur = pos + 1;
+        if (len == 0 && pos >= _file_size) {
+            return RET_READERROR;
+        }
+        return RET_OK;
+    }
+
+    int read_col(std::string& val) {
+        unsigned long long pos = _cur;
+        if (pos >= _file_size) {
+            return RET_READERROR;
+        }
+        unsigned int read_len = 0;
+        if (_buf[pos] == '\0') {
+            ++pos;
+            while (pos < _file_size) {
+                if (_buf[pos] == '\0') {
+                    break;
+                }
+                ++pos;
+            }
+            read_len = pos - _cur - 1;
+
+            //val.assign(_buf + _cur + 1, pos - _cur);
+            _cur = pos + 1;
+        } else {
+            read_len = _buf[pos] - '0';
+            _cur += read_len + 1;
+        }
+        if (read_len + 1 + _cur >= _file_size) {
+            Throw("read overflow");
+        }
+        val.assign(_buf + _cur + 1, read_len);
+        return RET_OK;
+    }
+    ~BinaryMMapReader() {
+        munmap(_buf, _file_size);
+        close(fd);
+    }
+private:
+    std::string _file;
+    int fd = 0;
+    char * _buf = 0;
+    unsigned long long _file_size = 0;
+    unsigned long long _cur = 0;
 };
 
 
@@ -122,6 +223,7 @@ private:
 
 class Util {
 public:
+
 static void split(const std::string& src, const std::string& separator, std::vector<std::string>& dest)
 {
 	//dest.clear();
@@ -836,6 +938,242 @@ private:
 	//std::map<int, std::vector<Column<int> > > _int_values;
 };
 
+class CSV2BinaryRowConvertor {
+public:
+    void build_cols_dict(FileReader& reader) {
+		std::string line;
+		//std::cout << "create column" << std::endl;
+		while (reader.readline(line) == RET_OK) {
+			//std::cout << "line:" << line << std::endl;
+			if (line.empty() || line[0] == '#') {
+				continue;
+			}
+			std::vector<std::string> val;
+			Util::split(line, ":", val);
+			if (val.size() != 2 || val[0].empty() || val[1].empty()) {
+				printf("error line:%s", line.c_str());
+				Throw( "error line in dict:" + line);
+			}
+			DataType data_type = static_cast<DataType>(std::stoi(val[1], nullptr));
+			if (data_type >= Type_UNKNOWN) {
+				Throw( "unkonw type for [" + line + "]");
+			}
+			if (_col_datatype_map.find(val[0]) != _col_datatype_map.end()) {
+			    Throw( "repeated col:" + val[0]);	
+			}
+			_col_datatype_map[val[0]] = data_type;
+		}
+	}
+    void parse_header(FileReader& reader) {
+		std::string line;
+	    std::vector<std::string> str_vals;
+
+        // parse header
+		int ret = reader.readline(line); 
+		if (ret != RET_OK) {
+			Throw( "read csv header error");
+		}
+		//std::cout << "header:" << line << std::endl;
+		Util::split(line, ",", str_vals);
+		if (str_vals.empty()) {
+			Throw( "empty header");
+		}
+		if (str_vals.size() != _col_datatype_map.size()) {
+			Throw( "csv header col size is not equal to dict col size");
+		}
+		for (unsigned int i = 0; i < str_vals.size(); ++i) {
+			//std::cout << str_vals[i] << std::endl;
+			if (_col_datatype_map.find(str_vals[i]) == _col_datatype_map.end()) {
+				std::cout <<  "csv col[" + str_vals[i] + "] cannot be found in dict col" << std::endl;
+				Throw( "csv col[" + str_vals[i] + "] cannot be found in dict col");
+			}
+			_datatype_seq.push_back(_col_datatype_map[str_vals[i]]);
+		}
+        _header_col_name = line;
+	}
+
+    void parse_line(const std::string& line, std::vector<std::string>& vals) {
+        std::vector<std::string> cols;
+        Util::split(line, ",", cols);
+        if (cols.size() != _datatype_seq.size()) {
+            std::cout << "cols size=" << cols.size() << ", " << _datatype_seq.size() << std::endl;
+            std::cout << line << std::endl;
+            Throw("col size is not equal to header col size");
+        }
+        for (unsigned int i = 0; i < cols.size(); ++i) {
+            std::string val;
+            Util::parse_val_from_str(cols[i], _datatype_seq[i], val);
+            vals.push_back(val);
+        }
+    }
+
+    int readline(FileReader& reader) {
+        std::string line;
+        while (reader.readline(line) == RET_OK) {
+
+        }
+    }
+
+    void write_binary_line(FileWriter& writer, const std::vector<std::string>& vals) {
+        if (vals.size() != _datatype_seq.size()) {
+            Throw("col val size is not equal to header col size");
+        }
+        for (unsigned int i = 0; i < vals.size(); ++i) {
+            char mark = '\0';
+            if (_datatype_seq[i] >= Type_SHORT && _datatype_seq[i] <= Type_LD) {
+                mark = '0' + vals[i].size();
+            }
+            writer.write_char(mark);
+            writer.write(vals[i].c_str(), vals[i].size());
+            if (_datatype_seq[i] == Type_STRING) {
+                writer.write_char('\0');
+            }
+        }
+    }
+
+    void write_header(FileWriter& writer) {
+        writer.writeline(_header_col_name);
+        std::string type_line;
+        for (auto it = _datatype_seq.begin(); it != _datatype_seq.end(); ++it) {
+            type_line.append(std::to_string(_datatype_seq[*it]));
+            type_line.append(",");
+        }
+        type_line.pop_back();
+        writer.writeline(type_line);
+    }
+
+    void convert(const std::string& csv_file, const std::string& dict_file, const std::string& binary_file) {
+        FileReader dict_reader(dict_file);
+        build_cols_dict(dict_reader);
+
+        FileReader csv_reader(csv_file);
+        FileWriter binary_writer(binary_file);
+
+        parse_header(csv_reader);
+
+        write_header(binary_writer);
+
+        std::vector<std::string> vals;
+        vals.reserve(_datatype_seq.size());
+        std::string line;
+        while (csv_reader.readline(line) == RET_OK) {
+            parse_line(line, vals);
+            write_binary_line(binary_writer, vals);
+            vals.clear();
+            line.clear();
+        }
+    }
+
+private:
+	std::map<std::string, DataType> _col_datatype_map;
+    std::vector<DataType> _datatype_seq;
+    std::string _header_col_name;
+};
+
+class ColValue {
+public:
+    ColValue(DataType type, const std::string& binary_val) : _type(type), _binary_val(binary_val) {}
+    template <class T>
+    int get_val(T val) {
+	    val = (*(static_cast<T *>(static_cast<void *>(const_cast<char *>(_binary_val.c_str())))));
+    }
+private:
+    DataType _type;
+    std::string _binary_val;
+};
+
+class RowBinaryColMeta {
+public:
+    std::string _col_name;
+    int _type;
+};
+
+class RTTRowBianryReader {
+public:
+    void read_header() {
+        std::string line;
+        char * buf = 0;
+        int buf_len = 0;
+        _reader.readline(buf, buf_len);
+        line.assign(buf, buf_len);
+        std::vector<std::string> arr;
+        Util::split(line, ",", arr);
+        if (arr.size() == 0) {
+            Throw("empty header, line:" + line);
+        }
+        RowBinaryColMeta col_meta;
+        _col_metas.reserve(arr.size());
+        for (auto it = arr.begin(); it != arr.end(); ++it) {
+            col_meta._col_name = *it;
+            _col_metas.push_back(col_meta);
+        }
+        _reader.readline(buf, buf_len);
+        line.assign(buf, buf_len);
+        arr.clear();
+        Util::split(line, ",", arr);
+        if (arr.size() != _col_metas.size()) {
+            Throw("meta size is not equal");
+        }
+        for (unsigned int i = 0; i < arr.size(); ++i) {
+            _col_metas[i]._type = std::stoi(arr[i]);
+        }
+    }
+
+    int init(const std::string& binary_file) {
+        return _reader.init(binary_file);
+    }
+
+    int read_row(std::vector<std::string>& vals) {
+        int read_col_num = 0;
+        std::string val;
+        while (read_col_num < _col_metas.size()) {
+            val.clear();
+            if (_reader.read_col(val) != RET_OK) {
+                break;
+            }
+            vals.push_back(val);
+            read_col_num++;
+
+        }
+        if (read_col_num == 0) {
+            return RET_READEND;
+        }
+        if (read_col_num != _col_metas.size()) {
+            Throw("read col num not enough");
+        }
+        return RET_OK;
+    }
+
+    int get_col_datatype(int index) {
+        if (index < 0 || index > _col_metas.size()) {
+            return RET_ERROR;
+        }
+        return _col_metas[index]._type;
+    }
+
+    int get_col_name(int index, std::string& col_name) {
+        if (index < 0 || index > _col_metas.size()) {
+            return RET_ERROR;
+        }
+        col_name = _col_metas[index]._col_name;
+        return RET_OK;
+    }
+
+    template <class T> void get_value(std::string& bin_str, T * val) {
+	    val = (static_cast<T *>(static_cast<void *>(const_cast<char *>(bin_str.c_str()))));
+    } 
+
+    
+private:
+    std::vector<RowBinaryColMeta> _col_metas;
+    BinaryMMapReader _reader;
+};
+
+template <>
+void RTTRowBianryReader::get_value(std::string& bin_str, std::string* val) {
+    val = &bin_str;
+}
+
 } // namespace
 
 void test_csv() {
@@ -854,10 +1192,29 @@ void test_binary() {
         std::cout << "timecost:" << end - start << std::endl;
     //binary.print();    
 }
+
+void test_csv_row() {
+    RTTBinaryDict::CSV2BinaryRowConvertor convertor;
+    //convertor.convert("rtt.large.csv3", "rtt.dict", "rtt.large.binary3");
+    convertor.convert("rtt.csv", "rtt.dict", "rtt.binary");
+
+}
+
+void test_read_row_binary() {
+    RTTBinaryDict::RTTRowBianryReader reader;
+    reader.init("rtt.binary");
+    reader.read_header();
+    std::vector<std::string> vals;
+    while (reader.read_row(vals) == RTTBinaryDict::RET_OK) {
+
+    }
+}
 int main() {
 	try {
 	    //test_csv();
-	    test_binary();
+	    //test_binary();
+        //test_csv_row();
+        test_read_row_binary();
 	} catch (RTTBinaryDict::RTTException& e) {
 		std::cout << e.info() << std::endl;
 	}
