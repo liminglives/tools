@@ -53,7 +53,9 @@ class AutoLogin():
 
 	def simple_login(self):
 		self._fill_username()
+		time.sleep(3)
 		self._fill_password()
+		time.sleep(2)
 		self._driver.find_element_by_id(self._submit_html_id).click()
 
 	def set_wait_time(self, wait_time):
@@ -63,7 +65,7 @@ class AutoLogin():
 		t = 0
 		ret = False
 		while True and t < self._wait_time:
-			if self._driver.current_url != url:
+			if self._driver.current_url != self._url:
 				print "redict success"
 				ret = True
 				break
@@ -72,74 +74,37 @@ class AutoLogin():
 		return ret
 
 	def get_cookies(self):
+		print self._driver.get_cookies()
 		return "; ".join([item["name"] + "=" + item["value"] +"\n" for item in self._driver.get_cookies()])
 
 	def fill_username(self, find_element_method, element):
-		if(find_element_method == "id"):		
-			WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.ID, element)))#等待10s,每500ms查询一次,直到元素加载完毕或超过10s结束
-			username = self._driver.find_element_by_id(element)
-
-		elif(find_element_method == "name"):
-			WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.NAME, element)))
-			username = self._driver.find_element_by_name(element)
-
-		elif(find_element_method == "xpath"):
-			WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, element)))
-			username = self._driver.find_element_by_xpath(element)
-		else:
-			print "find element error!"	
+		username = self.get_html_element(find_element_method, element)
+		if username is None:
+			return
 
 		username.clear()
 		username.click()
 		username.send_keys(self._username)
 
 	def fill_password(self, find_element_method, element):
-		if(find_element_method == "id"):
-			WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.ID, element)))
-			password = self._driver.find_element_by_id(element)
-
-		elif(find_element_method == "name"):
-			WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.NAME, element)))
-			password = self._driver.find_element_by_name(element)
-
-		elif(find_element_method == "xpath"):
-			WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, element)))
-			password = self._driver.find_element_by_xpath(element)
-		else:
-			print "find element error!"
+		password = self.get_html_element(find_element_method, element)
+		if password is None:
+			return
 
 		password.clear()
 		password.click()
 		password.send_keys(self._password)
 
 	def click_element(self, find_element_method, element):
-		if(find_element_method == "id"):
-			self._driver.find_element_by_id(element).click()
+		html_element = self.get_html_element(find_element_method, element)
+		if html_element:
+			html_element.click()
 
-		elif(find_element_method == "name"):
-			self._driver.find_element_by_name(element).click()
-
-		elif(find_element_method == "xpath"):
-			self._driver.find_element_by_xpath(element).click()
-		elif (find_element_method == "link_text"):
-			self._driver.find_element_by_link_text(element).click()
-		else:
-			print "find element error!"   	
 
 	def click_submit(self, find_element_method, element):
-		if(find_element_method == "id"):
-			WebDriverWait(self._driver, 5).until(EC.presence_of_element_located((By.ID, element)))
-			self._driver.find_element_by_id(element).click()
-
-		elif(find_element_method == "name"):
-			WebDriverWait(self._driver, 5).until(EC.presence_of_element_located((By.NAME, element)))
-			self._driver.find_element_by_name(element).click()
-
-		elif(find_element_method == "xpath"):
-			WebDriverWait(self._driver, 5).until(EC.presence_of_element_located((By.XPATH, element)))
-			self._driver.find_element_by_xpath(element).click()
-		else:
-			print "find element error!"
+		submit = self.get_html_element(find_element_method, element)
+		if submit:
+			submit.click()
 
 	def switch_to_iframe(self, find_element_method, element):
 		WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, element)))
@@ -148,6 +113,45 @@ class AutoLogin():
 	def save_page_source(self, filename):
 		with open(filename, "w") as f:
 			f.write(self._driver.page_source)
+
+	def get_html_element(self, find_element_method, element):
+		ret = None
+		if(find_element_method == "id"):
+			#WebDriverWait(self._driver, 5).until(EC.presence_of_element_located((By.ID, element)))
+			ret = self._driver.find_element_by_id(element)
+
+		elif(find_element_method == "name"):
+			#WebDriverWait(self._driver, 5).until(EC.presence_of_element_located((By.NAME, element)))
+			ret = self._driver.find_element_by_name(element)
+
+		elif(find_element_method == "xpath"):
+			#WebDriverWait(self._driver, 5).until(EC.presence_of_element_located((By.XPATH, element)))
+			ret = self._driver.find_element_by_xpath(element)
+		elif (find_element_method == "link_text"):
+			ret = self._driver.find_element_by_link_text(element)
+		else:
+			print "find element error! ", element 
+		return ret
+
+	# for filling validate code shown in image
+	def fill_img_code(self, find_img_method, img_element, find_img_input_method, img_input_elemet):
+		img_html = self.get_html_element(find_img_method, img_element)
+		if img_html is None:
+			return
+		img_addr = "code.png"
+		img_html.screenshot(img_addr)
+		import pytesseract
+		from PIL import Image
+		img = Image.open(img_addr)
+		img.load()
+		txt = pytesseract.image_to_string(img) # image_to_string(img, lang="chi_sim") - lang paramter can specify language or training package
+		time.sleep(2)
+
+		img_input_txt = self.get_html_element(find_img_input_method, img_input_elemet)
+		if img_input_txt is None:
+			return
+		img_input_txt.send_keys(txt)
+
 
 
 def login_jd():
@@ -197,4 +201,6 @@ def login_baidu():
 	print "success"
 
 if __name__ == "__main__":
-	login_baidu()
+	login_jd()
+
+

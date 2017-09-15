@@ -54,8 +54,8 @@ COOKIES_DEBUG = True
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware':123,
-    'tutorial.middlewares.IPPOOLS':124,
+    #'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware':123,
+    #'tutorial.middlewares.IPPOOLS':124,
     #'tutorial.middlewares.MyCustomDownloaderMiddleware': 543,
 }
 

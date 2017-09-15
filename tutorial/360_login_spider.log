@@ -1,0 +1,416 @@
+Wed, 21 Jun 2017 19:25:49 log.py[line:144] INFO Scrapy 1.4.0 started (bot: tutorial)
+Wed, 21 Jun 2017 19:25:49 log.py[line:147] INFO Overridden settings: {'COOKIES_DEBUG': True, 'NEWSPIDER_MODULE': 'tutorial.spiders', 'SPIDER_MODULES': ['tutorial.spiders'], 'BOT_NAME': 'tutorial'}
+Wed, 21 Jun 2017 19:25:51 middleware.py[line:53] INFO Enabled extensions:
+['scrapy.extensions.logstats.LogStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.corestats.CoreStats']
+Wed, 21 Jun 2017 19:25:51 _legacy.py[line:154] CRITICAL Unhandled error in Deferred:
+Wed, 21 Jun 2017 19:25:51 _legacy.py[line:154] CRITICAL 
+Traceback (most recent call last):
+  File "c:\python27\lib\site-packages\twisted\internet\defer.py", line 1301, in _inlineCallbacks
+    result = g.send(result)
+  File "c:\python27\lib\site-packages\scrapy\crawler.py", line 95, in crawl
+    six.reraise(*exc_info)
+  File "c:\python27\lib\site-packages\scrapy\crawler.py", line 77, in crawl
+    self.engine = self._create_engine()
+  File "c:\python27\lib\site-packages\scrapy\crawler.py", line 102, in _create_engine
+    return ExecutionEngine(self, lambda _: self.stop())
+  File "c:\python27\lib\site-packages\scrapy\core\engine.py", line 69, in __init__
+    self.downloader = downloader_cls(crawler)
+  File "c:\python27\lib\site-packages\scrapy\core\downloader\__init__.py", line 88, in __init__
+    self.middleware = DownloaderMiddlewareManager.from_crawler(crawler)
+  File "c:\python27\lib\site-packages\scrapy\middleware.py", line 58, in from_crawler
+    return cls.from_settings(crawler.settings, crawler)
+  File "c:\python27\lib\site-packages\scrapy\middleware.py", line 36, in from_settings
+    mw = mwcls.from_crawler(crawler)
+  File "c:\python27\lib\site-packages\scrapy\downloadermiddlewares\httpproxy.py", line 28, in from_crawler
+    return cls(auth_encoding)
+  File "C:\Users\zlm\Documents\GitHub\tools\tutorial\tutorial\middlewares.py", line 70, in __init__
+    self.load_ip_list("iplist.dat")
+  File "C:\Users\zlm\Documents\GitHub\tools\tutorial\tutorial\middlewares.py", line 91, in load_ip_list
+    for line in open(ip_list_file, "r"):
+IOError: [Errno 2] No such file or directory: 'iplist.dat'
+Wed, 21 Jun 2017 19:26:53 log.py[line:144] INFO Scrapy 1.4.0 started (bot: tutorial)
+Wed, 21 Jun 2017 19:26:53 log.py[line:147] INFO Overridden settings: {'COOKIES_DEBUG': True, 'NEWSPIDER_MODULE': 'tutorial.spiders', 'SPIDER_MODULES': ['tutorial.spiders'], 'BOT_NAME': 'tutorial'}
+Wed, 21 Jun 2017 19:26:53 middleware.py[line:53] INFO Enabled extensions:
+['scrapy.extensions.logstats.LogStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.corestats.CoreStats']
+Wed, 21 Jun 2017 19:26:54 middleware.py[line:53] INFO Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+Wed, 21 Jun 2017 19:26:54 middleware.py[line:53] INFO Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+Wed, 21 Jun 2017 19:26:54 middleware.py[line:53] INFO Enabled item pipelines:
+[]
+Wed, 21 Jun 2017 19:26:54 engine.py[line:256] INFO Spider opened
+Wed, 21 Jun 2017 19:26:55 logstats.py[line:48] INFO Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+Wed, 21 Jun 2017 19:26:55 telnet.py[line:60] DEBUG Telnet console listening on 127.0.0.1:6023
+Wed, 21 Jun 2017 19:26:56 cookies.py[line:70] DEBUG Received cookies from: <200 https://www.so.com/>
+Set-Cookie: QiHooGUID=F6270C66FF2EECEC0F9D0CE6F5457D11.1498044408190; expires=Fri, 21-Jun-2019 11:26:48 GMT; Max-Age=63072000; path=/
+
+Set-Cookie: _S=sd6gvlmnvf5b7oc24qqdacphl2; expires=Wed, 21-Jun-2017 11:36:48 GMT; Max-Age=600; path=/
+
+Wed, 21 Jun 2017 19:26:56 engine.py[line:238] DEBUG Crawled (200) <GET https://www.so.com/> (referer: None)
+Wed, 21 Jun 2017 19:26:56 360_login2.py[line:67] INFO url:https://login.360.cn/?userName=18818213619&rand=0.33744567605&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test
+Wed, 21 Jun 2017 19:26:56 engine.py[line:238] DEBUG Crawled (200) <GET https://login.360.cn/?userName=18818213619&rand=0.33744567605&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test> (referer: https://www.so.com/)
+Wed, 21 Jun 2017 19:26:56 360_login2.py[line:98] INFO result: test({"errno":0,"errmsg":"","token":"886f7963cd626e10"})
+Wed, 21 Jun 2017 19:26:56 360_login2.py[line:102] INFO getToken Success
+Wed, 21 Jun 2017 19:26:56 360_login2.py[line:104] INFO token:886f7963cd626e10
+Wed, 21 Jun 2017 19:26:56 360_login2.py[line:133] INFO url:https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=886f7963cd626e10&r=149804441663&isKeepAlive=0
+Wed, 21 Jun 2017 19:26:56 engine.py[line:238] DEBUG Crawled (200) <GET https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=886f7963cd626e10&r=149804441663&isKeepAlive=0> (referer: https://login.360.cn/?userName=18818213619&rand=0.33744567605&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test)
+Wed, 21 Jun 2017 19:26:56 scraper.py[line:158] ERROR Spider error processing <GET https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=886f7963cd626e10&r=149804441663&isKeepAlive=0> (referer: https://login.360.cn/?userName=18818213619&rand=0.33744567605&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test)
+Traceback (most recent call last):
+  File "c:\python27\lib\site-packages\twisted\internet\defer.py", line 653, in _runCallbacks
+    current.result = callback(current.result, *args, **kw)
+  File "C:\Users\zlm\Documents\GitHub\tools\tutorial\tutorial\spiders\360_login2.py", line 147, in parse_do_login_result
+    if int(result['errno']) == 0:
+ValueError: invalid literal for int() with base 10: 'login_captcha_001'
+Wed, 21 Jun 2017 19:26:57 engine.py[line:295] INFO Closing spider (finished)
+Wed, 21 Jun 2017 19:26:57 statscollectors.py[line:47] INFO Dumping Scrapy stats:
+{'downloader/request_bytes': 1534,
+ 'downloader/request_count': 3,
+ 'downloader/request_method_count/GET': 3,
+ 'downloader/response_bytes': 87355,
+ 'downloader/response_count': 3,
+ 'downloader/response_status_count/200': 3,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2017, 6, 21, 11, 26, 57, 90000),
+ 'log_count/DEBUG': 5,
+ 'log_count/ERROR': 1,
+ 'log_count/INFO': 12,
+ 'request_depth_max': 2,
+ 'response_received_count': 3,
+ 'scheduler/dequeued': 3,
+ 'scheduler/dequeued/memory': 3,
+ 'scheduler/enqueued': 3,
+ 'scheduler/enqueued/memory': 3,
+ 'spider_exceptions/ValueError': 1,
+ 'start_time': datetime.datetime(2017, 6, 21, 11, 26, 55, 423000)}
+Wed, 21 Jun 2017 19:26:57 engine.py[line:326] INFO Spider closed (finished)
+Wed, 21 Jun 2017 19:30:03 log.py[line:144] INFO Scrapy 1.4.0 started (bot: tutorial)
+Wed, 21 Jun 2017 19:30:03 log.py[line:147] INFO Overridden settings: {'COOKIES_DEBUG': True, 'NEWSPIDER_MODULE': 'tutorial.spiders', 'SPIDER_MODULES': ['tutorial.spiders'], 'BOT_NAME': 'tutorial'}
+Wed, 21 Jun 2017 19:30:03 middleware.py[line:53] INFO Enabled extensions:
+['scrapy.extensions.logstats.LogStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.corestats.CoreStats']
+Wed, 21 Jun 2017 19:30:03 middleware.py[line:53] INFO Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+Wed, 21 Jun 2017 19:30:03 middleware.py[line:53] INFO Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+Wed, 21 Jun 2017 19:30:03 middleware.py[line:53] INFO Enabled item pipelines:
+[]
+Wed, 21 Jun 2017 19:30:03 engine.py[line:256] INFO Spider opened
+Wed, 21 Jun 2017 19:30:03 logstats.py[line:48] INFO Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+Wed, 21 Jun 2017 19:30:03 telnet.py[line:60] DEBUG Telnet console listening on 127.0.0.1:6023
+Wed, 21 Jun 2017 19:30:03 cookies.py[line:70] DEBUG Received cookies from: <200 https://www.so.com/>
+Set-Cookie: QiHooGUID=1D5A2554E877DB9D3498FF5ADE4CBC43.1498044595940; expires=Fri, 21-Jun-2019 11:29:55 GMT; Max-Age=63072000; path=/
+
+Set-Cookie: _S=qie7h16s39n13utgu91p7ci8k2; expires=Wed, 21-Jun-2017 11:39:55 GMT; Max-Age=600; path=/
+
+Wed, 21 Jun 2017 19:30:03 engine.py[line:238] DEBUG Crawled (200) <GET https://www.so.com/> (referer: None)
+Wed, 21 Jun 2017 19:30:03 360_login2.py[line:67] INFO url:https://login.360.cn/?userName=18818213619&rand=0.677321663242&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test
+Wed, 21 Jun 2017 19:30:04 engine.py[line:238] DEBUG Crawled (200) <GET https://login.360.cn/?userName=18818213619&rand=0.677321663242&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test> (referer: https://www.so.com/)
+Wed, 21 Jun 2017 19:30:04 360_login2.py[line:98] INFO result: test({"errno":0,"errmsg":"","token":"ceb88bea294dd976"})
+Wed, 21 Jun 2017 19:30:04 360_login2.py[line:102] INFO getToken Success
+Wed, 21 Jun 2017 19:30:04 360_login2.py[line:104] INFO token:ceb88bea294dd976
+Wed, 21 Jun 2017 19:30:04 360_login2.py[line:133] INFO url:https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=ceb88bea294dd976&r=149804460430&isKeepAlive=0
+Wed, 21 Jun 2017 19:30:04 engine.py[line:238] DEBUG Crawled (200) <GET https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=ceb88bea294dd976&r=149804460430&isKeepAlive=0> (referer: https://login.360.cn/?userName=18818213619&rand=0.677321663242&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test)
+Wed, 21 Jun 2017 19:30:04 scraper.py[line:158] ERROR Spider error processing <GET https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=ceb88bea294dd976&r=149804460430&isKeepAlive=0> (referer: https://login.360.cn/?userName=18818213619&rand=0.677321663242&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test)
+Traceback (most recent call last):
+  File "c:\python27\lib\site-packages\twisted\internet\defer.py", line 653, in _runCallbacks
+    current.result = callback(current.result, *args, **kw)
+  File "C:\Users\zlm\Documents\GitHub\tools\tutorial\tutorial\spiders\360_login2.py", line 143, in parse_do_login_result
+    loging.info("response:" + str(response.body))
+NameError: global name 'loging' is not defined
+Wed, 21 Jun 2017 19:30:04 engine.py[line:295] INFO Closing spider (finished)
+Wed, 21 Jun 2017 19:30:04 statscollectors.py[line:47] INFO Dumping Scrapy stats:
+{'downloader/request_bytes': 1536,
+ 'downloader/request_count': 3,
+ 'downloader/request_method_count/GET': 3,
+ 'downloader/response_bytes': 87319,
+ 'downloader/response_count': 3,
+ 'downloader/response_status_count/200': 3,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2017, 6, 21, 11, 30, 4, 777000),
+ 'log_count/DEBUG': 5,
+ 'log_count/ERROR': 1,
+ 'log_count/INFO': 12,
+ 'request_depth_max': 2,
+ 'response_received_count': 3,
+ 'scheduler/dequeued': 3,
+ 'scheduler/dequeued/memory': 3,
+ 'scheduler/enqueued': 3,
+ 'scheduler/enqueued/memory': 3,
+ 'spider_exceptions/NameError': 1,
+ 'start_time': datetime.datetime(2017, 6, 21, 11, 30, 3, 748000)}
+Wed, 21 Jun 2017 19:30:04 engine.py[line:326] INFO Spider closed (finished)
+Wed, 21 Jun 2017 19:30:45 log.py[line:144] INFO Scrapy 1.4.0 started (bot: tutorial)
+Wed, 21 Jun 2017 19:30:45 log.py[line:147] INFO Overridden settings: {'COOKIES_DEBUG': True, 'NEWSPIDER_MODULE': 'tutorial.spiders', 'SPIDER_MODULES': ['tutorial.spiders'], 'BOT_NAME': 'tutorial'}
+Wed, 21 Jun 2017 19:30:45 middleware.py[line:53] INFO Enabled extensions:
+['scrapy.extensions.logstats.LogStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.corestats.CoreStats']
+Wed, 21 Jun 2017 19:30:45 middleware.py[line:53] INFO Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+Wed, 21 Jun 2017 19:30:45 middleware.py[line:53] INFO Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+Wed, 21 Jun 2017 19:30:45 middleware.py[line:53] INFO Enabled item pipelines:
+[]
+Wed, 21 Jun 2017 19:30:45 engine.py[line:256] INFO Spider opened
+Wed, 21 Jun 2017 19:30:45 logstats.py[line:48] INFO Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+Wed, 21 Jun 2017 19:30:45 telnet.py[line:60] DEBUG Telnet console listening on 127.0.0.1:6023
+Wed, 21 Jun 2017 19:30:45 cookies.py[line:70] DEBUG Received cookies from: <200 https://www.so.com/>
+Set-Cookie: QiHooGUID=11503710C40ED8740A8127C12ADCEA96.1498044637751; expires=Fri, 21-Jun-2019 11:30:37 GMT; Max-Age=63072000; path=/
+
+Set-Cookie: _S=k39ks907r0s2pqtstpm3j5gif2; expires=Wed, 21-Jun-2017 11:40:37 GMT; Max-Age=600; path=/
+
+Wed, 21 Jun 2017 19:30:45 engine.py[line:238] DEBUG Crawled (200) <GET https://www.so.com/> (referer: None)
+Wed, 21 Jun 2017 19:30:45 360_login2.py[line:67] INFO url:https://login.360.cn/?userName=18818213619&rand=0.388975056326&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test
+Wed, 21 Jun 2017 19:30:46 engine.py[line:238] DEBUG Crawled (200) <GET https://login.360.cn/?userName=18818213619&rand=0.388975056326&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test> (referer: https://www.so.com/)
+Wed, 21 Jun 2017 19:30:46 360_login2.py[line:98] INFO result: test({"errno":0,"errmsg":"","token":"e437cc76178de13d"})
+Wed, 21 Jun 2017 19:30:46 360_login2.py[line:102] INFO getToken Success
+Wed, 21 Jun 2017 19:30:46 360_login2.py[line:104] INFO token:e437cc76178de13d
+Wed, 21 Jun 2017 19:30:46 360_login2.py[line:133] INFO url:https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=e437cc76178de13d&r=149804464615&isKeepAlive=0
+Wed, 21 Jun 2017 19:30:46 engine.py[line:238] DEBUG Crawled (200) <GET https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=e437cc76178de13d&r=149804464615&isKeepAlive=0> (referer: https://login.360.cn/?userName=18818213619&rand=0.388975056326&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test)
+Wed, 21 Jun 2017 19:30:46 360_login2.py[line:143] INFO response: test({"errno":"login_captcha_001","errmsg":" \u8bf7\u8f93\u5165\u9a8c\u8bc1\u7801","capturl":"http:\/\/captcha.360.cn\/image.php?app=i360"})
+Wed, 21 Jun 2017 19:30:46 scraper.py[line:158] ERROR Spider error processing <GET https://login.360.cn/?pwdmethod=1&captFlag=&func=test&password=8a1849705be3efaa2ddba36528bb3789&userName=18818213619&from=pcw_so&rtype=data&m=login&o=sso&callback=QiUserJsonP1377767974692&token=e437cc76178de13d&r=149804464615&isKeepAlive=0> (referer: https://login.360.cn/?userName=18818213619&rand=0.388975056326&m=getToken&o=sso&callback=QiUserJsonP1377767974691&func=test)
+Traceback (most recent call last):
+  File "c:\python27\lib\site-packages\twisted\internet\defer.py", line 653, in _runCallbacks
+    current.result = callback(current.result, *args, **kw)
+  File "C:\Users\zlm\Documents\GitHub\tools\tutorial\tutorial\spiders\360_login2.py", line 148, in parse_do_login_result
+    if int(result['errno']) == 0:
+ValueError: invalid literal for int() with base 10: 'login_captcha_001'
+Wed, 21 Jun 2017 19:30:46 engine.py[line:295] INFO Closing spider (finished)
+Wed, 21 Jun 2017 19:30:46 statscollectors.py[line:47] INFO Dumping Scrapy stats:
+{'downloader/request_bytes': 1536,
+ 'downloader/request_count': 3,
+ 'downloader/request_method_count/GET': 3,
+ 'downloader/response_bytes': 87293,
+ 'downloader/response_count': 3,
+ 'downloader/response_status_count/200': 3,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2017, 6, 21, 11, 30, 46, 568000),
+ 'log_count/DEBUG': 5,
+ 'log_count/ERROR': 1,
+ 'log_count/INFO': 13,
+ 'request_depth_max': 2,
+ 'response_received_count': 3,
+ 'scheduler/dequeued': 3,
+ 'scheduler/dequeued/memory': 3,
+ 'scheduler/enqueued': 3,
+ 'scheduler/enqueued/memory': 3,
+ 'spider_exceptions/ValueError': 1,
+ 'start_time': datetime.datetime(2017, 6, 21, 11, 30, 45, 577000)}
+Wed, 21 Jun 2017 19:30:46 engine.py[line:326] INFO Spider closed (finished)
+Wed, 21 Jun 2017 19:35:00 log.py[line:144] INFO Scrapy 1.4.0 started (bot: tutorial)
+Wed, 21 Jun 2017 19:35:00 log.py[line:147] INFO Overridden settings: {'COOKIES_DEBUG': True, 'NEWSPIDER_MODULE': 'tutorial.spiders', 'SPIDER_MODULES': ['tutorial.spiders'], 'BOT_NAME': 'tutorial'}
+Wed, 21 Jun 2017 19:35:00 middleware.py[line:53] INFO Enabled extensions:
+['scrapy.extensions.logstats.LogStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.corestats.CoreStats']
+Wed, 21 Jun 2017 19:35:01 middleware.py[line:53] INFO Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+Wed, 21 Jun 2017 19:35:01 middleware.py[line:53] INFO Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+Wed, 21 Jun 2017 19:35:01 middleware.py[line:53] INFO Enabled item pipelines:
+[]
+Wed, 21 Jun 2017 19:35:01 engine.py[line:256] INFO Spider opened
+Wed, 21 Jun 2017 19:35:01 logstats.py[line:48] INFO Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+Wed, 21 Jun 2017 19:35:01 telnet.py[line:60] DEBUG Telnet console listening on 127.0.0.1:6023
+Wed, 21 Jun 2017 19:35:02 cookies.py[line:70] DEBUG Received cookies from: <200 https://www.baidu.com/>
+Set-Cookie: BDORZ=27315; max-age=86400; domain=.baidu.com; path=/
+
+Set-Cookie: __bsi=14984306597951815121_00_16_N_N_1_0303_C02F_N_N_N_0; expires=Wed, 21-Jun-17 11:34:59 GMT; domain=www.baidu.com; path=/
+
+Wed, 21 Jun 2017 19:35:02 engine.py[line:238] DEBUG Crawled (200) <GET https://www.baidu.com/> (referer: None)
+Wed, 21 Jun 2017 19:35:02 cookies.py[line:61] DEBUG Sending cookies to: <GET https://www.baidu.com/>
+Cookie: BDORZ=27315
+
+Wed, 21 Jun 2017 19:35:02 cookies.py[line:70] DEBUG Received cookies from: <200 https://www.baidu.com/>
+Set-Cookie: BAIDUID=05954E848089A4F8D43A04BA083EE474:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+
+Set-Cookie: BIDUPSID=05954E848089A4F8D43A04BA083EE474; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+
+Set-Cookie: PSTM=1498044894; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+
+Set-Cookie: BDSVRTM=0; path=/
+
+Set-Cookie: BD_HOME=0; path=/
+
+Set-Cookie: H_PS_PSSID=1438_21107_22075; path=/; domain=.baidu.com
+
+Set-Cookie: __bsi=14320127679729366724_00_0_I_R_6_0303_C02F_N_I_I_0; expires=Wed, 21-Jun-17 11:34:59 GMT; domain=www.baidu.com; path=/
+
+Wed, 21 Jun 2017 19:35:02 engine.py[line:238] DEBUG Crawled (200) <GET https://www.baidu.com/> (referer: https://www.baidu.com/)
+Wed, 21 Jun 2017 19:35:02 baidu_spider2.py[line:70] INFO get baidu home page success!
+Wed, 21 Jun 2017 19:35:02 baidu_spider2.py[line:52] INFO get callback method name is bd__cbs__299066543.0
+Wed, 21 Jun 2017 19:35:02 cookies.py[line:61] DEBUG Sending cookies to: <GET https://passport.baidu.com/v2/api/?getapi&tpl=pp&apiver=v3&class=login&logintype=basicLogin&tt=1498044902531&callback=bd__cbs__299066543.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49>
+Cookie: BAIDUID=05954E848089A4F8D43A04BA083EE474:FG=1; H_PS_PSSID=1438_21107_22075; BDORZ=27315; PSTM=1498044894; BIDUPSID=05954E848089A4F8D43A04BA083EE474
+
+Wed, 21 Jun 2017 19:35:02 cookies.py[line:70] DEBUG Received cookies from: <200 https://passport.baidu.com/v2/api/?getapi&tpl=pp&apiver=v3&class=login&logintype=basicLogin&tt=1498044902531&callback=bd__cbs__299066543.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49>
+Set-Cookie: HOSUPPORT=1; expires=Sun, 07-Sep-2025 11:34:54 GMT; path=/; domain=passport.baidu.com; httponly
+
+Wed, 21 Jun 2017 19:35:02 engine.py[line:238] DEBUG Crawled (200) <GET https://passport.baidu.com/v2/api/?getapi&tpl=pp&apiver=v3&class=login&logintype=basicLogin&tt=1498044902531&callback=bd__cbs__299066543.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49> (referer: https://www.baidu.com/)
+Wed, 21 Jun 2017 19:35:02 baidu_spider2.py[line:85] INFO get token success! the token is: 2b0df6f56cbd182b61f9019bc82918bd
+Wed, 21 Jun 2017 19:35:02 baidu_spider2.py[line:52] INFO get callback method name is bd__cbs__1209599382.0
+Wed, 21 Jun 2017 19:35:02 cookies.py[line:61] DEBUG Sending cookies to: <GET https://passport.baidu.com/v2/api/?loginhistory&tpl=pp&apiver=v3&token=2b0df6f56cbd182b61f9019bc82918bd&tt=1498044902816&callback=bd__cbs__1209599382.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49>
+Cookie: HOSUPPORT=1; BAIDUID=05954E848089A4F8D43A04BA083EE474:FG=1; H_PS_PSSID=1438_21107_22075; BDORZ=27315; PSTM=1498044894; BIDUPSID=05954E848089A4F8D43A04BA083EE474
+
+Wed, 21 Jun 2017 19:35:02 cookies.py[line:70] DEBUG Received cookies from: <200 https://passport.baidu.com/v2/api/?loginhistory&tpl=pp&apiver=v3&token=2b0df6f56cbd182b61f9019bc82918bd&tt=1498044902816&callback=bd__cbs__1209599382.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49>
+Set-Cookie: UBI=fi_PncwhpxZ%7ETaJc6HGcl8DebuEctAA5gqY; expires=Sun, 07-Sep-2025 11:34:54 GMT; path=/; domain=passport.baidu.com; httponly
+
+Set-Cookie: PASSID=UdoalF; expires=Tue, 21-Jun-2016 11:34:54 GMT; path=/; domain=passport.baidu.com; httponly
+
+Wed, 21 Jun 2017 19:35:02 engine.py[line:238] DEBUG Crawled (200) <GET https://passport.baidu.com/v2/api/?loginhistory&tpl=pp&apiver=v3&token=2b0df6f56cbd182b61f9019bc82918bd&tt=1498044902816&callback=bd__cbs__1209599382.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49> (referer: https://passport.baidu.com/v2/?login&u=http://index.baidu.com)
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:101] INFO get login history response is: bd__cbs__1209599382.0({"errInfo":{        "no": "0"    },    "data": {        'displayname':[        ]    }})
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:52] INFO get callback method name is bd__cbs__330372820.0
+Wed, 21 Jun 2017 19:35:03 cookies.py[line:61] DEBUG Sending cookies to: <GET https://passport.baidu.com/v2/api/?logincheck&tpl=pp&apiver=v3&sub_source=leadsetpwd&username=18600890116&isphone=false&callback=bd__cbs__u1vvyu&token=2b0df6f56cbd182b61f9019bc82918bd&tt=1498044903051&callback=bd__cbs__330372820.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49>
+Cookie: HOSUPPORT=1; UBI=fi_PncwhpxZ%7ETaJc6HGcl8DebuEctAA5gqY; BAIDUID=05954E848089A4F8D43A04BA083EE474:FG=1; H_PS_PSSID=1438_21107_22075; BDORZ=27315; PSTM=1498044894; BIDUPSID=05954E848089A4F8D43A04BA083EE474
+
+Wed, 21 Jun 2017 19:35:03 cookies.py[line:70] DEBUG Received cookies from: <200 https://passport.baidu.com/v2/api/?logincheck&tpl=pp&apiver=v3&sub_source=leadsetpwd&username=18600890116&isphone=false&callback=bd__cbs__u1vvyu&token=2b0df6f56cbd182b61f9019bc82918bd&tt=1498044903051&callback=bd__cbs__330372820.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49>
+Set-Cookie: UBI=fi_PncwhpxZ%7ETaKAQhI1ZKBMrwem9165L3ttVsgbwAeGjZFIS-gL0VXgshZFpBcKlMM%7ENIa6pOz67hVQM0i; expires=Sun, 07-Sep-2025 11:34:55 GMT; path=/; domain=passport.baidu.com; httponly
+
+Set-Cookie: PASSID=KZDlZo; expires=Tue, 21-Jun-2016 11:34:55 GMT; path=/; domain=passport.baidu.com; httponly
+
+Wed, 21 Jun 2017 19:35:03 engine.py[line:238] DEBUG Crawled (200) <GET https://passport.baidu.com/v2/api/?logincheck&tpl=pp&apiver=v3&sub_source=leadsetpwd&username=18600890116&isphone=false&callback=bd__cbs__u1vvyu&token=2b0df6f56cbd182b61f9019bc82918bd&tt=1498044903051&callback=bd__cbs__330372820.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49> (referer: https://passport.baidu.com/v2/?login&u=http://index.baidu.com)
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:114] INFO get login check response is: bd__cbs__330372820.0({"errInfo":{        "no": "0"    },    "data": {        "codeString" : "",        "vcodetype" : "",        "userid" : "",        "mobile" : ""    }})
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:52] INFO get callback method name is bd__cbs__131060292.0
+Wed, 21 Jun 2017 19:35:03 cookies.py[line:61] DEBUG Sending cookies to: <GET https://passport.baidu.com/v2/getpublickey?tpl=pp&apiver=v3&token=2b0df6f56cbd182b61f9019bc82918bd&tt=1498044903346&callback=bd__cbs__131060292.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49>
+Cookie: HOSUPPORT=1; UBI=fi_PncwhpxZ%7ETaKAQhI1ZKBMrwem9165L3ttVsgbwAeGjZFIS-gL0VXgshZFpBcKlMM%7ENIa6pOz67hVQM0i; BAIDUID=05954E848089A4F8D43A04BA083EE474:FG=1; H_PS_PSSID=1438_21107_22075; BDORZ=27315; PSTM=1498044894; BIDUPSID=05954E848089A4F8D43A04BA083EE474
+
+Wed, 21 Jun 2017 19:35:03 engine.py[line:238] DEBUG Crawled (200) <GET https://passport.baidu.com/v2/getpublickey?tpl=pp&apiver=v3&token=2b0df6f56cbd182b61f9019bc82918bd&tt=1498044903346&callback=bd__cbs__131060292.0&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49> (referer: https://passport.baidu.com/v2/?login&u=http://index.baidu.com)
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:127] INFO get public key response is: bd__cbs__131060292.0({"errno":'0',"msg":'',"pubkey":'-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC6qZpAOtR+S3S\/j8AVUMBYwsl7\ni5Wdt7FEhD\/SneNp8ci051QPrjDl6eHzV56RxPkhWcvsLjviRsS83YdPeRbVOR10\n7lvA8IjxiOAMNNvlrpikeFPGHcH7CsqX6ya57B9kfzrJGYsT4rwjcIjtXDcXB0Sn\nO4lPuMH\/HCfIARvj2QIDAQAB\n-----END PUBLIC KEY-----\n',"key":'f6uJ7w4AE69Bp2aR7StAn3OylMOAo4Vo'})
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:133] INFO rsa_key is f6uJ7w4AE69Bp2aR7StAn3OylMOAo4Vo
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:143] INFO rsa_public_key is -----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC6qZpAOtR+S3S/j8AVUMBYwsl7
+i5Wdt7FEhD/SneNp8ci051QPrjDl6eHzV56RxPkhWcvsLjviRsS83YdPeRbVOR10
+7lvA8IjxiOAMNNvlrpikeFPGHcH7CsqX6ya57B9kfzrJGYsT4rwjcIjtXDcXB0Sn
+O4lPuMH/HCfIARvj2QIDAQAB
+-----END PUBLIC KEY-----
+
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:196] INFO after encrypt, the pwd is Kub6TMxfXXI8pRzg4v2VK6M6Cd3yymnxAjIb+NyJJ2RyUoqXp75ayWdkXgLop2FJDz5hqKWYa8I2C1Uxy9sav9o2ohMhBWq+VfQ3Tn2g0bnk31BTu4eqndJGStVpYnuIw7H5+Ww83SyFqmaKJmMjTyOa7LpgHMtFR34BHTWqB1A=
+Wed, 21 Jun 2017 19:35:03 baidu_spider2.py[line:200] INFO login post data is: rsakey=f6uJ7w4AE69Bp2aR7StAn3OylMOAo4Vo&verifycode=&mem_pass=on&detect=1&tt=1498044903575&charset=UTF-8&ppui_logintime=71755&gid=F970A89-DB7D-4F4B-B1CF-8CE2AA219D49&username=liminglives&safeflg=0&crypttype=12&codeString=&staticpage=https%3A%2F%2Fpassport.baidu.com%2Fstatic%2Fpasspc-account%2Fhtml%2Fv3Jump.html&logLoginType=pc_loginBasic&password=Kub6TMxfXXI8pRzg4v2VK6M6Cd3yymnxAjIb%2BNyJJ2RyUoqXp75ayWdkXgLop2FJDz5hqKWYa8I2C1Uxy9sav9o2ohMhBWq%2BVfQ3Tn2g0bnk31BTu4eqndJGStVpYnuIw7H5%2BWw83SyFqmaKJmMjTyOa7LpgHMtFR34BHTWqB1A%3D&apiver=v3&isPhone=&tpl=pp&logintype=basicLogin&loginmerge=true&token=2b0df6f56cbd182b61f9019bc82918bd&quick_user=0&u=http%3A%2F%2Findex.baidu.com
+Wed, 21 Jun 2017 19:35:03 cookies.py[line:61] DEBUG Sending cookies to: <POST https://passport.baidu.com/v2/api/?login>
+Cookie: HOSUPPORT=1; UBI=fi_PncwhpxZ%7ETaKAQhI1ZKBMrwem9165L3ttVsgbwAeGjZFIS-gL0VXgshZFpBcKlMM%7ENIa6pOz67hVQM0i; BDORZ=27315; BAIDUID=05954E848089A4F8D43A04BA083EE474:FG=1; PSTM=1498044894; BIDUPSID=05954E848089A4F8D43A04BA083EE474; FP_UID=a8e078358d61a058b43420dee15e9e77; H_PS_PSSID=1438_21107_22075
+
+Wed, 21 Jun 2017 19:35:04 cookies.py[line:70] DEBUG Received cookies from: <200 https://passport.baidu.com/v2/api/?login>
+Set-Cookie: DVID=1498044895974%7C404c9437-bd73-4c6b-82bf-ffa0847114e3; expires=Sun, 07-Sep-2025 11:34:55 GMT; path=/
+
+Set-Cookie: HISTORY=57d8940d2a2c9fd011515373a7cc1ffc81a454; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com
+
+Set-Cookie: PTOKEN=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/; domain=baidu.com
+
+Set-Cookie: BDUSS=S0tMk9ZajFiWDFiMWlNMzUyNG9Ec0NTfjdkaHptT3RSd1FBYnZHZ0J5VGc1bkZaSVFBQUFBJCQAAAAAAAAAAAEAAABISzYMbGltaW5nbGl2ZXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBZSlngWUpZT; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=baidu.com; httponly
+
+Set-Cookie: SAVEUSERID=49331901f259ddeb0bbc4cc838755c; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com; httponly
+
+Set-Cookie: USERNAMETYPE=1; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com; httponly
+
+Set-Cookie: PTOKEN=b029d5d6d838f7684e87cb3ae1e3dcdd; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com; secure; httponly
+
+Set-Cookie: STOKEN=fcfac5237d9df118a6cbee1b46de9f43fb88e6f07f6fe31966389adf65462e01; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com; secure; httponly
+
+Wed, 21 Jun 2017 19:35:04 engine.py[line:238] DEBUG Crawled (200) <POST https://passport.baidu.com/v2/api/?login> (referer: https://passport.baidu.com/v2/?login&u=http://index.baidu.com)
+Wed, 21 Jun 2017 19:35:04 baidu_spider2.py[line:205] INFO login response is : <!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<script type="text/javascript">
+
+
+	var href = decodeURIComponent("https:\/\/passport.baidu.com\/static\/passpc-account\/html\/v3Jump.html")+"?"
+
+var accounts = '&accounts='
+
+href += "err_no=0&callback=&codeString=&userName=liminglives&phoneNumber=&mail=&hao123Param=UzB0TWs5WmFqRmlXREZpTVdsTk16VXlORzlFYzBOVGZqZGthSHB0VDNSU2QxRkJZblpIWjBKNVZHYzFia1phU1ZGQlFVRkJKQ1FBQUFBQUFBQUFBQUVBQUFCSVN6WU1iR2x0YVc1bmJHbDJaWE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT0JaU2xuZ1dVcFpU&u=http://index.baidu.com&tpl=&secstate=&gotourl=&authtoken=&loginproxy=&resetpwd=&vcodetype=&lstr=&ltoken=&bckv=1&bcsync=FLPT%2F3b3R%2FaLJ86kkUMeL%2F1BNiKlg%2BEIvNZTGaL0wAzyRBi3jNiq7z5H0IjEU%2BpPBSP1I7r6YEelJL4Gpw0MQlCaYhFpuaca6u9luYtp0Y%2FsdvCN22v9bjdg3N6w6t3VsEhHUrsn%2FoDC4OCxUez0ZWtu2mYzBYQ%2B32j60J4%2BVVZOc2TD7MXD66ADyLg4V4T1qhm3yipizYbnY2YWdCatuFLKiar2uccLW4C0TMxsJ4egQYFotmvRYtma1m4QHIUHjJ9QxG0D%2FRtePbqHU2GskrRQYbIUPJiXpuZgubb0pvhKKCHqCqfHJPHgt6fHkA7Bv30TujdjTZIicIRYIRdvFQ%3D%3D&bcchecksum=1245837526&code=&bdToken=&realnameswitch=&setpwdswitch=&bctime=1498044896&bdstoken=&authsid=&jumpset=&appealurl=&realnameverifyemail=0&realnameauthsid="+accounts;
+
+
+if(window.location){
+    window.location.replace(href);
+}else{
+   document.location.replace(href); 
+}
+</script>
+</body>
+</html>
+Wed, 21 Jun 2017 19:35:04 baidu_spider2.py[line:207] INFO type:<type 'list'>, cookies:['DVID=1498044895974%7C404c9437-bd73-4c6b-82bf-ffa0847114e3; expires=Sun, 07-Sep-2025 11:34:55 GMT; path=/', 'HISTORY=57d8940d2a2c9fd011515373a7cc1ffc81a454; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com', 'PTOKEN=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/; domain=baidu.com', 'BDUSS=S0tMk9ZajFiWDFiMWlNMzUyNG9Ec0NTfjdkaHptT3RSd1FBYnZHZ0J5VGc1bkZaSVFBQUFBJCQAAAAAAAAAAAEAAABISzYMbGltaW5nbGl2ZXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBZSlngWUpZT; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=baidu.com; httponly', 'SAVEUSERID=49331901f259ddeb0bbc4cc838755c; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com; httponly', 'USERNAMETYPE=1; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com; httponly', 'PTOKEN=b029d5d6d838f7684e87cb3ae1e3dcdd; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com; secure; httponly', 'STOKEN=fcfac5237d9df118a6cbee1b46de9f43fb88e6f07f6fe31966389adf65462e01; expires=Sun, 07-Sep-2025 11:34:56 GMT; path=/; domain=passport.baidu.com; secure; httponly']
+Wed, 21 Jun 2017 19:35:04 baidu_spider2.py[line:209] INFO login baidu success!
+Wed, 21 Jun 2017 19:35:04 engine.py[line:295] INFO Closing spider (finished)
+Wed, 21 Jun 2017 19:35:04 statscollectors.py[line:47] INFO Dumping Scrapy stats:
+{'downloader/request_bytes': 5752,
+ 'downloader/request_count': 7,
+ 'downloader/request_method_count/GET': 6,
+ 'downloader/request_method_count/POST': 1,
+ 'downloader/response_bytes': 39030,
+ 'downloader/response_count': 7,
+ 'downloader/response_status_count/200': 7,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2017, 6, 21, 11, 35, 4, 520000),
+ 'log_count/DEBUG': 20,
+ 'log_count/INFO': 23,
+ 'request_depth_max': 6,
+ 'response_received_count': 7,
+ 'scheduler/dequeued': 7,
+ 'scheduler/dequeued/memory': 7,
+ 'scheduler/enqueued': 7,
+ 'scheduler/enqueued/memory': 7,
+ 'start_time': datetime.datetime(2017, 6, 21, 11, 35, 1, 920000)}
+Wed, 21 Jun 2017 19:35:04 engine.py[line:326] INFO Spider closed (finished)
