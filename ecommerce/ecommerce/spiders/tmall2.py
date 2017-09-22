@@ -11,8 +11,8 @@ from ecommerce.items import TmallCategory,TmallCatBrandItem,TmallCatBrandGoodsIt
 import json
 import time
 
-class TmallSpider(scrapy.Spider):
-    name = 'tmall2'
+class Tmall2Spider(scrapy.Spider):
+    name = '2tmall2'
     allowed_domains = ['tmall.com']
     url_host = "https://list.tmall.com"
     url_path = "/search_product.htm?q="
@@ -22,8 +22,7 @@ class TmallSpider(scrapy.Spider):
     ]
     seq = 0
     cat_data = {}
-    fout = open('goods.data', 'w')
-    fout_raw = open('goods_list.data', 'w')
+
 
     hheaders = {
         #"authority":"list.tmall.com",
@@ -62,6 +61,8 @@ class TmallSpider(scrapy.Spider):
             callback = self.parse)
 
     def parse(self, response):
+        self.fout = open('goods.data', 'w')
+        self.fout_raw = open('goods_list.data', 'w')
         with open('tmall_homepage.html', 'w') as f:
             f.write(response.body)
         return self.parse_homepage(response)

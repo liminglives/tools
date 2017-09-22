@@ -11,7 +11,7 @@ import time
 import csv
 import urllib
 
-class TmallSpider(scrapy.Spider):
+class TmallBrandSearchSpider(scrapy.Spider):
     name = 'tmall_brand_search'
     allowed_domains = ['tmall.com']
     url_host = "https://list.tmall.com"
@@ -25,7 +25,9 @@ class TmallSpider(scrapy.Spider):
     brand_cat_writer = None
     brand_match_search_writer = None
     brand_unmatch_search_writer = None
+    headers2 = ["ProductName","Bloomberg Ticker","Brand","Store Type","SWA_Category 1","SWA_Category 2","YearMonth","Year","Month","Sales Unit","Sales Value"]
 
+    '''
     brand_cate_search_f = open('brand_cat_search.csv', 'wb')
     fieldnames = ['BrandId', 'BrandName', 'CatId', 'CatName']
     brand_cat_writer = csv.DictWriter(brand_cate_search_f, fieldnames = fieldnames)
@@ -40,6 +42,7 @@ class TmallSpider(scrapy.Spider):
     unmatch_f = open('brand_unmatch_search.csv', 'wb')
     brand_unmatch_search_writer = csv.DictWriter(unmatch_f, headers2)
     brand_unmatch_search_writer.writeheader()
+    '''
 
     hheaders = {
         #"authority":"list.tmall.com",
@@ -73,6 +76,8 @@ class TmallSpider(scrapy.Spider):
         logging.info('================== start request')
 
 
+
+
         yield scrapy.Request(
             url = self.start_urls[0],
             headers = self.hheaders,
@@ -80,6 +85,22 @@ class TmallSpider(scrapy.Spider):
             callback = self.parse)
 
     def parse(self, response):
+        logging.info('33333333333333333333333333333333333333333333333333333')
+        self.brand_cate_search_f = open('brand_cat_search.csv', 'wb')
+        self.fieldnames = ['BrandId', 'BrandName', 'CatId', 'CatName']
+        self.brand_cat_writer = csv.DictWriter(self.brand_cate_search_f, fieldnames = self.fieldnames)
+        self.brand_cat_writer.writeheader()
+
+        self.headers = ['Key', 'BrandId', 'BrandName', 'Brand', "FinancialType", 'ProductName', "BloombergTicker"]
+        self.brand_match_search_f = open('brand_match_search.csv', 'wb')
+        self.brand_match_search_writer = csv.DictWriter(self.brand_match_search_f, self.headers)
+        self.brand_match_search_writer.writeheader()
+
+        self.headers2 = ["ProductName","Bloomberg Ticker","Brand","Store Type","SWA_Category 1","SWA_Category 2","YearMonth","Year","Month","Sales Unit","Sales Value"]
+        self.unmatch_f = open('brand_unmatch_search.csv', 'wb')
+        self.brand_unmatch_search_writer = csv.DictWriter(self.unmatch_f, self.headers2)
+        self.brand_unmatch_search_writer.writeheader()
+
         return self.get_brandid_and_catid_by_brandname()
 
 
