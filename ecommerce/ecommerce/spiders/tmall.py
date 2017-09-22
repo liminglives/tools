@@ -6,8 +6,6 @@ sys.setdefaultencoding('utf8')
 
 import scrapy
 import logging
-from ecommerce.items import EcommerceItem
-from ecommerce.items import TmallCategory,TmallCatBrandItem,TmallCatBrandGoodsItem
 import json
 import time
 import csv
@@ -28,7 +26,16 @@ class TmallSpider(scrapy.Spider):
     csv_writer = csv.DictWriter(fout, fieldsname)
     csv_writer.writeheader()
     fout_raw = open('goods_list.data', 'w')
-    cat_brand_file = 'brand_cat_search.csv'#'cat_brand.csv'
+
+    cat_brand_file = 'brand_cat_search.csv'
+
+    ff = open(cat_brand_file)
+    f = open('brand_all.csv')
+    for row in f:
+        logging.info('1111111111 '+str(row))
+    cat_brand_reader = csv.DictReader(ff)
+    for row in cat_brand_reader:
+        logging.info('000000000 ' + str(row))
 
     cat_brand_set = set()
 
@@ -55,7 +62,7 @@ class TmallSpider(scrapy.Spider):
             res[kv[0].strip()] = kv[1].strip()
         return res
 
-    def start_requestss(self):
+    def start_request(self):
 
         yield scrapy.Request(
             url = self.start_urls[0],
@@ -66,173 +73,17 @@ class TmallSpider(scrapy.Spider):
     def parse(self, response):
         return self.get_goods_by_catid_and_brandid()
 
-
-    def parse_homepage(self, response):
-        logging.info('111111====================')
-        data = response.xpath('//*[@id="J_defaultData"]').xpath('text()').extract_first()
-        data = data.strip()
-        #logging.info(data)
-
-        j = json.loads(data)
-
-        d = j['page']['100']
-
-        j_main_cat = d['categoryMainLines']
-        self.cat_data['main_cat'] = j_main_cat
-        main_cat_size = len(j_main_cat)
-        self.cat_data = j_main_cat
-
-        sub_cat_hotword = {}
-        for item in d:
-            if 'hotWordType' in item:
-                seq = int(item[len('hotWordType'):])
-                logging.info('hotwordtype'+str(seq))
-                sub_cat_hotword[seq] = d[item]
-
-        for i in xrange(main_cat_size):
-            cat = TmallCategory()
-
-            main_cat = j_main_cat[i]
-            sub_cats = sub_cat_hotword[i + 1]
-            title = ""
-            for c in main_cat:
-                if len(c) > len('title') and c[0:len('title')] == 'title' and len(main_cat[c]) > 0:
-                    if title != '':
-                        title += '/'
-                    title += main_cat[c]
-            main_cat['title'] = title
-
-            #main_cat['sub_cats'] = sub_cats
-            appids = []
-            cat['main_cat'] = main_cat
-            cat['sub_cat'] = sub_cats
-            for sub_cat in sub_cats:
-                if sub_cat['isUse']:
-                    appids.append(str(sub_cat['appId']))
-
-            subcat_hotword_url = 'https://aldh5.tmall.com/recommend2.htm?notNeedBackup=true&appId=' + (','.join(appids))
-            main_cat['subcat_hotword_url'] = subcat_hotword_url
-            cat['subcat_hotword_url'] = subcat_hotword_url
-
-            req = scrapy.Request(
-                url = subcat_hotword_url,
-                headers = self.hheaders,
-                callback = self.recommend_parse)
-            req.meta['cat'] = cat
-
-            #self.request(main_cat)
-
-            yield req
-            break
-
-
-    def request(self, main_cat):
-        req = scrapy.Request(
-            url = main_cat['subcat_hotword_url'],
-            headers = self.hheaders,
-            callback = self.recommend_parse)
-        req.meta['cat'] = main_cat
-        return req
-
-    def get_param_from_url(self, url, key):
-        key += '='
-        idx = url.find(key)
-        if idx == -1:
-            return None
-        idx += len(key)
-        end = url[idx:].find('&')
-        val = url[idx:] if end == -1 else url[idx : idx + end]
-        return val
-
-    def recommend_parse(self, response):
-        logging.info('999999999999999')
-        data = unicode(response.body, errors = 'replace')
-        j = json.loads(data)
-        cat = response.meta['cat']
-        #cat['subcat_hotword'] = j
-        cat['subcat_hotword'] = j
-
-
-
-        subcat_map = {}
-        for subcat in cat['sub_cat']:
-            subcat_map[subcat['appId']] = subcat
-
-        cat['hotword_brand'] = {}
-        for appid in j:
-            data = j[appid]['data']
-            for item in data:
-                context = {}
-                context['main_cat'] = cat['main_cat']
-                context['appid'] = appid
-                context['sub_cat'] = subcat_map[appid]
-                context['sub_cat_hotword'] = item
-                url = item['action']
-
-                cat_no = self.get_param_from_url(url, 'cat')
-                if not cat_no:
-                    continue
-                get_brand_from_cat_url = 'https://list.tmall.com/ajax/allBrandShowForGaiBan.htm?t=0&sort=s&style=g&search_condition=2&from=sn_1_cat-qp'
-
-                get_brand_from_cat_url += "&cat=" + str(cat_no)
-                industry_cat_no = self.get_param_from_url(url, 'industryCatId')
-                cat['hotword_brand'][cat_no] = item
-
-                if industry_cat_no:
-                    get_brand_from_cat_url += '&industryCatId=' + str(industry_cat_no)
-
-                item['brand_url'] = get_brand_from_cat_url
-                context['cat'] = cat_no
-
-                req = scrapy.Request(url = get_brand_from_cat_url, headers = self.hheaders, callback = self.parse_brand)
-                req.meta['context'] = context
-
-                yield req
-
-        pass
-
-    def parse_brand(self, response):
-        logging.info('brand 8888888888888888888')
-        data = unicode(response.body, errors = 'replace')
-        j = json.loads(data)
-        context = response.meta['context']
-        #context['brand'] = j
-        item = TmallCatBrandItem()
-        item['main_cat'] = context['main_cat']
-        item['sub_cat'] = context['sub_cat']
-        item['sub_cat_hotword'] = context['sub_cat_hotword']
-        item['cat_id'] = context['cat']
-        item['appid'] = context['appid']
-        #item['brands'] = context['brand']
-
-        for brand in j:
-            brand_name = brand['title']
-            href = brand['href']
-            brand_id = self.get_param_from_url(href, 'brand')
-            if brand_id is None:
-                continue
-            url = 'https://list.tmall.com/m/search_items.htm?style=list'
-            url += '&cat=' + context['cat']
-            url += '&brand=' + brand_id
-
-            req = scrapy.Request(url = url, headers = self.hheaders, callback = self.parse_goods_list)
-            req.meta['context'] = context
-            req.meta['brand_name'] = brand_name
-            req.meta['brand_id'] = brand_id
-            req.meta['page_no'] = 1
-
-            yield req
-
     def get_goods_by_catid_and_brandid(self):
-        f = open(self.cat_brand_file)
-        r = csv.DictReader(f)
-        brand_id_dict = {}
-        with open('brand_match_search.csv') as readf:
-            readr = csv.DictReader(readf)
-            for row in readr:
-                brand_id_dict[row['BrandId']] = row
 
-        for row in r:
+        #brand_id_dict = {}
+        #with open('brand_match_search.csv') as readf:
+        #    readr = csv.DictReader(readf)
+        #    for row in readr:
+        #        brand_id_dict[row['BrandId']] = row
+        logging.info('---------- get goods')
+
+        for row in self.cat_brand_reader:
+            logging.info('--------------' + str(row))
             cat_id = str(row['CatId'])
             brand_id = str(row['BrandId'])
 
@@ -242,8 +93,8 @@ class TmallSpider(scrapy.Spider):
             else:
                 cat_brand_set.add(cat_brand_id)
 
-            if brand_id not in brand_id_dict:
-                continue
+            #if brand_id not in brand_id_dict:
+            #    continue
 
             url = 'https://list.tmall.com/m/search_items.htm?style=list'            
             url += '&brand=' + brand_id
