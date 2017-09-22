@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+import sys  
+reload(sys)  
+sys.setdefaultencoding('utf8')   
 
 import scrapy
 import logging
@@ -10,10 +10,9 @@ from ecommerce.items import EcommerceItem
 from ecommerce.items import TmallCategory,TmallCatBrandItem,TmallCatBrandGoodsItem
 import json
 import time
-import csv
 
 class TmallSpider(scrapy.Spider):
-    name = 'tmall'
+    name = 'tmall2'
     allowed_domains = ['tmall.com']
     url_host = "https://list.tmall.com"
     url_path = "/search_product.htm?q="
@@ -24,11 +23,7 @@ class TmallSpider(scrapy.Spider):
     seq = 0
     cat_data = {}
     fout = open('goods.data', 'w')
-    fieldsname = ['CatId', 'BrandId', 'PageNo', 'Title', 'Url', 'Price', 'Sold', 'ShopName', 'ShopId', 'Location']
-    csv_writer = csv.DictWriter(fout, fieldsname)
-    csv_writer.writeheader()
     fout_raw = open('goods_list.data', 'w')
-    cat_brand_file = 'cat_brand.csv'
 
     hheaders = {
         #"authority":"list.tmall.com",
@@ -42,6 +37,11 @@ class TmallSpider(scrapy.Spider):
         "Cache-control":"max-age=0",
         "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
     }
+    raw_cookie = '_med=dw:1600&dh:900&pw:1600&ph:900&ist:0; _m_h5_tk=fde939fe377b15f1c551ce3f335ff0f5_1504859336473; _m_h5_tk_enc=a0a8ef40316b0d74fcad605186544e61; _tb_token_=35e4be4d3333f; uc1=cookie14=UoTcC%2BSX%2F6mogg%3D%3D&lng=zh_CN&cookie16=VFC%2FuZ9az08KUQ56dCrZDlbNdA%3D%3D&existShop=false&cookie21=URm48syIYn73&tag=8&cookie15=WqG3DMC9VAQiUQ%3D%3D&pas=0; uc3=sg2=BxJP6B4LIzYp%2BV%2FeLdBOLaNf0NmeFCORECuWx8Ma3M8%3D&nk2=D8rrz16wbO1El74%3D&id2=UUBYjOisWsBJ&vt3=F8dBzWfTEYZatYka4co%3D&lg2=URm48syIIVrSKA%3D%3D; uss=UNaGsRU1vsCl%2FS4TE1qU3F751SR693k%2B6QhroEm42a%2FYqnLA%2FOEQOJ1z8s8%3D; lgc=liminglives; tracknick=liminglives; cookie2=3bfbdcf3f87b10727416f592e751eeea; sg=s8f; cookie1=UteENoRLXAOT%2BQe4R3C3NjlYJE5myu%2FmfsWEhtDjoqc%3D; unb=280885558; t=160b81ebbba3d0e1ebf6bdcc3767a4ec; _l_g_=Ug%3D%3D; _nk_=liminglives; cookie17=UUBYjOisWsBJ; login=true; swfstore=223484; x=__ll%3D-1%26_ato%3D0; tt=sec.taobao.com; l=AhkZMpmuQo8wKkRhz1vcQmDeqQ7zmg1X; pnm_cku822=238UW5TcyMNYQwiAiwQRHhBfEF8QXtHcklnMWc%3D%7CUm5Ockp3TntDdkt0SndKcCY%3D%7CU2xMHDJ7G2AHYg8hAS8UKQcnCVU0Uj5ZJ11zJXM%3D%7CVGhXd1llXWBZbFRhXGNdYF1nUG1PcEt2THNMd093S3BIckpkMg%3D%3D%7CVWldfS0QMAU7BCQYIAAuCiFnAF05UApBPlMQOxskClwK%7CVmhIGCUFOQI%2FAiIeJhMtDTYLMQsrFywRLAw4BTgYJB8iHz8KMQxaDA%3D%3D%7CV25Tbk5zU2xMcEl1VWtTaUlwJg%3D%3D; res=scroll%3A1583*6077-client%3A1583*794-offset%3A1583*6077-screen%3A1600*900; cna=VtDTERQLnmwCAXbyG241gYgV; otherx=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0; whl=-1%260%260%260; isg=Aq6u9a7reyvkqI_MBK1s1wj3_wSwB7rt4Q5CqNh3GrFsu04VQD_CuVS7BRGs'
+
+    #cookie = {"cookie2":"18d011caacea5cc233620bb4662dcfc1", "t":"917c68ce59c74e1ff951ce3d10f85173", "_tb_token_":"3e305a7773e73"}
+    #cookie = {'pnm_cku822': '053UW5TcyMNYQwiAiwQRHhBfEF8QXtHcklnMWc%3D%7CUm5Ockt%2FRX1BdUl0SHRMdCI%3D%7CU2xMHDJ7G2AHYg8hAS8XIgwsAl4%2FWTVSLFZ4Lng%3D%7CVGhXd1llXGhSalZiXmNfY1tjVGlLf0J6RXhHe0J7Q3pDfEB9SWcx%7CVWldfS0TMwowDi4QMB4%2BBycJXwk%3D%7CVmhIGCUFOBgkHCkXNwwxDjoaJh0gHT0JNAkpFS4TLg47AD1rPQ%3D%3D%7CV25Tbk5zU2xMcEl1VWtTaUlwJg%3D%3D', 'cookie2': '107f1cda7786efd49c936682831630a0', 'isg': 'AlVVgGIIoNYQSYTX7bpqrI_iZFHP-sEgexDXBtf6FEwbLnUgn6IZNGPsjgRj', 'res': 'scroll%3A1583*6029-client%3A1583*794-offset%3A1583*6029-screen%3A1600*900', 'sm4': '310100', 'l': 'AtbWc7Qb21jdcFYTShEr6844pofYdxqx', 't': '6144bba42e39924704079cb1fb909e3c', '_m_h5_tk': '2098407e44994fb6a22a82ef41186a3a_1497519252292', 'cna': '0FrBEXmazlsCAXbyG27/LQqQ', 'cq': 'ccp%3D1', '_m_h5_tk_enc': 'fd5bab0717d458f1425740cb70270337', '_tb_token_': 'c51bb3c61eadb', '_med': 'dw:1600&dh:900&pw:1600&ph:900&ist:0'}
+    #cookie = {}
 
     #user_agent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Mobile Safari/537.36"
 
@@ -62,7 +62,9 @@ class TmallSpider(scrapy.Spider):
             callback = self.parse)
 
     def parse(self, response):
-        return self.get_goods_by_catid_and_brandid()
+        with open('tmall_homepage.html', 'w') as f:
+            f.write(response.body)
+        return self.parse_homepage(response)
 
 
     def parse_homepage(self, response):
@@ -79,7 +81,7 @@ class TmallSpider(scrapy.Spider):
         self.cat_data['main_cat'] = j_main_cat
         main_cat_size = len(j_main_cat)
         self.cat_data = j_main_cat
-
+        
         sub_cat_hotword = {}
         for item in d:
             if 'hotWordType' in item:
@@ -154,8 +156,8 @@ class TmallSpider(scrapy.Spider):
 
         subcat_map = {}
         for subcat in cat['sub_cat']:
-            subcat_map[subcat['appId']] = subcat
-
+            subcat_map[subcat['appId']] = subcat    
+        
         cat['hotword_brand'] = {}
         for appid in j:
             data = j[appid]['data']
@@ -171,11 +173,11 @@ class TmallSpider(scrapy.Spider):
                 if not cat_no:
                     continue
                 get_brand_from_cat_url = 'https://list.tmall.com/ajax/allBrandShowForGaiBan.htm?t=0&sort=s&style=g&search_condition=2&from=sn_1_cat-qp'
-
+ 
                 get_brand_from_cat_url += "&cat=" + str(cat_no)
                 industry_cat_no = self.get_param_from_url(url, 'industryCatId')
                 cat['hotword_brand'][cat_no] = item
-
+                 
                 if industry_cat_no:
                     get_brand_from_cat_url += '&industryCatId=' + str(industry_cat_no)
 
@@ -221,60 +223,40 @@ class TmallSpider(scrapy.Spider):
 
             yield req
 
-    def get_goods_by_catid_and_brandid(self):
-        f = open(self.cat_brand_file)
-        r = csv.DictReader(f)
-        brand_id_dict = {}
-        with open('brand_code.csv') as readf:
-            readr = csv.DictReader(readf)
-            for row in readr:
-                brand_id_dict[row['BrandId']] = row
-
-        for row in r:
-            cat_id = str(row['CatId'])
-            brand_id = str(row['BrandId'])
-
-            if brand_id not in brand_id_dict:
-                continue
-
-            url = 'https://list.tmall.com/m/search_items.htm?style=list'
-            url += '&cat=' + cat_id
-            url += '&brand=' + brand_id
-
-            req = scrapy.Request(url = url, headers = self.hheaders, callback = self.parse_goods_list)
-            req.meta['brand_id'] = brand_id
-            req.meta['cat_id'] = cat_id
-            req.meta['page_no'] = 1
-
-            yield req
-
 
     def parse_goods_list(self, response):
+        context = response.meta['context']
+        brand_name = response.meta['brand_name']
         brand_id = response.meta['brand_id']
-        cat_id = response.meta['cat_id']
         page_no = response.meta['page_no']
 
         data = unicode(response.body, errors = 'replace')
         j = json.loads(data)
 
-        self.fout_raw.write(json.dumps({'brand_id':brand_id, 'cat_id':cat_id, 'page_no':page_no, 'goods':j}) + "\n")
+        self.fout_raw.write(json.dumps({'brand':brand_id, 'cat':context['cat'], 'page_no':page_no, 'goods':j}) + "\n")
 
         for item in j['item']:
             goods = {} #TmallCatBrandGoodsItem()
+            #goods['main_cat'] = context['main_cat']
+            #goods['sub_cat'] = context['sub_cat']
+            #goods['sub_cat_hotword'] = context['sub_cat_hotword']
+            #goods['cat_id'] = context['cat']
+            #goods['appid'] = context['appid']
+            #goods['brand_id'] = brand_id
 
-            goods['BrandId'] = brand_id
-            goods['CatId'] = cat_id
-            goods['PageNo'] = page_no
-            goods['Title'] = item['title']
-            goods['Url'] = item['url']
-            goods['Price'] = item['price']
-            goods['Sold'] = item['sold']
-            goods['ShopName'] = item['shop_name']
-            goods['ShopId'] = item['shop_id']
-            goods['Location'] = item['location']
+            goods['category'] = context['main_cat']['title']
+            goods['subcategory'] = context['sub_cat']['title']
+            goods['subcategory_hotword'] = context['sub_cat_hotword']['title']
+            goods['brand_name'] = brand_name            
+            goods['goods_title'] = item['title']
+            goods['goods_url'] = item['url']
+            goods['goods_price'] = item['price']
+            goods['goods_sold'] = item['sold']
+            goods['shop_name'] = item['shop_name']
+            goods['shop_id'] = item['shop_id']
+            goods['location'] = item['location']
 
-            self.csv_writer.writerow(goods)
-            #self.fout.write(json.dumps(goods) + '\n')
+            self.fout.write(json.dumps(goods) + '\n')
 
         total_page = j['total_page']
         total_results = j['total_results']
@@ -282,12 +264,13 @@ class TmallSpider(scrapy.Spider):
         if page_no < total_page:
             page_no += 1
             url = 'https://list.tmall.com/m/search_items.htm?style=list'
-            url += '&cat=' + cat_id
+            url += '&cat=' + context['cat']
             url += '&brand=' + brand_id
             url += '&page_no=' + str(page_no)
             req = scrapy.Request(url = url, headers = self.hheaders, callback = self.parse_goods_list)
+            req.meta['context'] = context
+            req.meta['brand_name'] = brand_name
             req.meta['brand_id'] = brand_id
-            req.meta['cat_id'] = cat_id
             req.meta['page_no'] = page_no
             yield req
 
