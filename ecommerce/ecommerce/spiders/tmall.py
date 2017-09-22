@@ -28,7 +28,9 @@ class TmallSpider(scrapy.Spider):
     csv_writer = csv.DictWriter(fout, fieldsname)
     csv_writer.writeheader()
     fout_raw = open('goods_list.data', 'w')
-    cat_brand_file = 'cat_brand.csv'
+    cat_brand_file = 'brand_cat_search.csv'#'cat_brand.csv'
+
+    cat_brand_set = set()
 
     hheaders = {
         #"authority":"list.tmall.com",
@@ -225,7 +227,7 @@ class TmallSpider(scrapy.Spider):
         f = open(self.cat_brand_file)
         r = csv.DictReader(f)
         brand_id_dict = {}
-        with open('brand_code.csv') as readf:
+        with open('brand_match_search.csv') as readf:
             readr = csv.DictReader(readf)
             for row in readr:
                 brand_id_dict[row['BrandId']] = row
@@ -234,12 +236,19 @@ class TmallSpider(scrapy.Spider):
             cat_id = str(row['CatId'])
             brand_id = str(row['BrandId'])
 
+            cat_brand_id = cat_id + "_"+ brand_id
+            if cat_brand_id in cat_brand_set:
+                continue
+            else:
+                cat_brand_set.add(cat_brand_id)
+
             if brand_id not in brand_id_dict:
                 continue
 
-            url = 'https://list.tmall.com/m/search_items.htm?style=list'
-            url += '&cat=' + cat_id
+            url = 'https://list.tmall.com/m/search_items.htm?style=list'            
             url += '&brand=' + brand_id
+            if len(cat_id) > 0:
+                url += '&cat=' + cat_id
 
             req = scrapy.Request(url = url, headers = self.hheaders, callback = self.parse_goods_list)
             req.meta['brand_id'] = brand_id
@@ -282,7 +291,8 @@ class TmallSpider(scrapy.Spider):
         if page_no < total_page:
             page_no += 1
             url = 'https://list.tmall.com/m/search_items.htm?style=list'
-            url += '&cat=' + cat_id
+            if len(cat_id) > 0:
+                url += '&cat=' + cat_id
             url += '&brand=' + brand_id
             url += '&page_no=' + str(page_no)
             req = scrapy.Request(url = url, headers = self.hheaders, callback = self.parse_goods_list)

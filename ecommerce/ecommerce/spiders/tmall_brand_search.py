@@ -6,11 +6,10 @@ sys.setdefaultencoding('utf8')
 
 import scrapy
 import logging
-from ecommerce.items import EcommerceItem
-from ecommerce.items import TmallCategory,TmallCatBrandItem,TmallCatBrandGoodsItem
 import json
 import time
 import csv
+import urllib
 
 class TmallSpider(scrapy.Spider):
     name = 'tmall_brand_search'
@@ -26,6 +25,21 @@ class TmallSpider(scrapy.Spider):
     brand_cat_writer = None
     brand_match_search_writer = None
     brand_unmatch_search_writer = None
+
+    brand_cate_search_f = open('brand_cat_search.csv', 'wb')
+    fieldnames = ['BrandId', 'BrandName', 'CatId', 'CatName']
+    brand_cat_writer = csv.DictWriter(brand_cate_search_f, fieldnames = fieldnames)
+    brand_cat_writer.writeheader()
+
+    headers = ['Key', 'BrandId', 'BrandName', 'Brand', "FinancialType", 'ProductName', "BloombergTicker"]
+    brand_match_search_f = open('brand_match_search.csv', 'wb')
+    brand_match_search_writer = csv.DictWriter(brand_match_search_f, headers)
+    brand_match_search_writer.writeheader()
+
+    headers2 = ["ProductName","Bloomberg Ticker","Brand","Store Type","SWA_Category 1","SWA_Category 2","YearMonth","Year","Month","Sales Unit","Sales Value"]
+    unmatch_f = open('brand_unmatch_search.csv', 'wb')
+    brand_unmatch_search_writer = csv.DictWriter(unmatch_f, headers2)
+    brand_unmatch_search_writer.writeheader()
 
     hheaders = {
         #"authority":"list.tmall.com",
@@ -46,8 +60,8 @@ class TmallSpider(scrapy.Spider):
 
     #user_agent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Mobile Safari/537.36"
 
-    def parse_raw_cookie(self):
-        cookies = self.raw_cookie.strip().split(";")
+    def parse_raw_cookie(self, cookie):
+        cookies = cookie.strip().split(";")
         res = {}
         for c in cookies:
             kv = c.strip().split('=')
@@ -57,15 +71,7 @@ class TmallSpider(scrapy.Spider):
 
     def start_request(self):
         logging.info('================== start request')
-        brand_cate_search_f = open('brand_cat_search.csv', 'w')
-        fieldnames = ['BrandId', 'BrandName', 'CatId', 'CatName']
-        self.brand_cat_writer = csv.DictWriter(brand_cate_search_f, fieldsname)
-        self.brand_cat_writer.writeheader()
 
-        headers = ['Key', 'BrandId', 'BrandName', 'Brand', "FinancialType", 'ProductName', "BloombergTicker"]
-        brand_match_search_f = open('brand_match_search.csv', 'w')
-        self.brand_match_search_writer = csv.DictWriter(brand_match_search_f, headers)
-        self.brand_match_search_writer.writeheader()
 
         yield scrapy.Request(
             url = self.start_urls[0],
@@ -88,36 +94,39 @@ class TmallSpider(scrapy.Spider):
         return val
 
     def get_brandid_and_catid_by_brandname(self):
-        brand_f = open('brand_unmatch.csv')
+        brand_f = open('brand_unmatch_raw.csv')
         reader = csv.DictReader(brand_f)
 
-        headers = reader.fieldnames
-        unmatch_f = open('brand_unmatch_search.csv', 'w')
-        self.brand_unmatch_search_writer = csv.DictWriter(unmatch_f, headers)
-        self.brand_unmatch_search_writer.writeheader()
+
 
         for row in reader:
-            time.sleep(3)
-            brand = row['Brand']
+            info = {}
+            for k in self.headers2:
+                info[k] = row[k]
+
+            row = info
+
+            brand = row['Brand'].strip()
             search_brand = brand
             brand_en = None
             brand_cn = None
             brands = brand.split('/')
             if len(brands) == 2:
-                brand_en = brands[0]
-                brand_cn = brands[1]
+                brand_en = brands[0].strip()
+                brand_cn = brands[1].strip()
                 search_brand = brand_cn
 
-            url = "https://list.tmall.com/m/search_items.htm?q="
-            url += search_brand
+            url = "https://list.tmall.com/m/search_items.htm?"
+            data = {"q":search_brand}
+            url += urllib.urlencode(data)
             context = {}
             context['row'] = row
             context['search_brand'] = search_brand
-            context['brand'] = brand
-            context['brand_en'] = brand_en
+            context['brand'] = brand.lower()
+            context['brand_en'] = brand_en.lower() if brand_en else brand_en
             context['brand_cn'] = brand_cn
 
-            req = scrapy.Request(url = url, headers = self.hheaders, callback = self.parse_search_result)
+            req = scrapy.Request(url = url, headers = self.hheaders, cookies = self.parse_raw_cookie(self.cookies), callback = self.parse_search_result)
             req.meta['context'] = context
 
             yield req
@@ -126,6 +135,7 @@ class TmallSpider(scrapy.Spider):
 
     def parse_search_result(self, response):
         if response.status != 200:
+            logging.info('============= response status '+str(response.status))
             return
         context = response.meta['context']
         data = unicode(response.body, errors = 'replace')
@@ -135,12 +145,41 @@ class TmallSpider(scrapy.Spider):
         cat_list = j['cat_list']
 
         if len(brand_list) == 0:
-            logging.critical('no brand:' + json.dumps(context))
-            self.brand_unmatch_search_writer.writerow(context['row'])
+            if len(j['minisites']) > 0:
+                brand_id_searched = j['minisites'][0]['id']
+                brand_name_searched = context['search_brand']
+                info = {}
+                info['Key'] = context['search_brand']
+                info['Brand'] = context['row']['Brand']
+                info['FinancialType'] = 'Stock'
+                info['BloombergTicker'] = context['row']['Bloomberg Ticker']
+                info['ProductName'] = context['row']['ProductName']
+                info['BrandName'] = brand_name_searched
+                info['BrandId'] = brand_id_searched
+                self.brand_match_search_writer.writerow(info)   
+
+                for cat in cat_list:
+                    info= {}
+                    info['BrandName'] = brand_name_searched
+                    info['BrandId'] = brand_id_searched
+                    info['CatName'] = cat['cat_name']
+                    info['CatId'] = cat['cat_id']
+                    self.brand_cat_writer.writerow(info)
+                if len(cat_list) == 0:
+                    info= {}
+                    info['BrandName'] = brand_name_searched
+                    info['BrandId'] = brand_id_searched
+                    info['CatName'] = ""
+                    info['CatId'] = ""
+                    self.brand_cat_writer.writerow(info) 
+            else:
+                logging.critical('no brand:' + json.dumps(context))
+                self.brand_unmatch_search_writer.writerow(context['row'])
         elif len(brand_list) == 1:
             brand_name_searched = brand_list[0]['brand_name']
             brand_id_searched = brand_list[0]['brand_id']
-            if brand_name_searched.lower() == context['brand'].lower() or brand_name_searched.lower() == context['brand_cn'].lower() or brand_name_searched.lower() == context['brand_en'].lower():
+            #if brand_name_searched.lower() == context['brand'] or brand_name_searched == context['brand_cn'] or brand_name_searched == context['brand_en']:
+            if True:
                 info = {}
                 info['Key'] = context['search_brand']
                 info['Brand'] = context['row']['Brand']
@@ -158,21 +197,49 @@ class TmallSpider(scrapy.Spider):
                     info['CatName'] = cat['cat_name']
                     info['CatId'] = cat['cat_id']
                     self.brand_cat_writer.writerow(info)
+                if len(cat_list) == 0:
+                    info= {}
+                    info['BrandName'] = brand_name_searched
+                    info['BrandId'] = brand_id_searched
+                    info['CatName'] = ""
+                    info['CatId'] = ""
+                    self.brand_cat_writer.writerow(info)
             else:
-                logging.critical('not full match:' + json.dumps(context))
+                logging.critical('=====================not full match:' + json.dumps(context))
                 self.brand_unmatch_search_writer.writerow(context['row'])
         else:
             hit = False
+            minisite = None
+            if len(j['minisites']) > 0:
+                minisite = j['minisites'][0]
+            brandid = None
             for brand in brand_list:
-                if brand['brand_name'].lower() == context['brand'].lower():
-                    url = "https://list.tmall.com/m/search_items.htm?brand="
-                    url += str(brand['brand_id'])
-                    context['search_brand'] += "_" + str(brand['brand_id'])
-                    req = scrapy.Request(url = url, headers = self.hheaders, callback = self.parse_search_result)
-                    req.meta['context'] = context
-                    yield req
+                if minisite != None and brand['brand_id'] == minisite['id']: 
+                    brandid = brand['brand_id']
+                    hit = True
+                    break
+                if brand['brand_name'].lower().strip() == context['brand']:
+                    brandid = brand['brand_id']
+                    hit = True
+                    break
+                if brand['brand_name'].lower().strip() == context['search_brand']:
+                    brandid = brand['brand_id']
+                    hit = True
+                    break
+
                 else:
-                    logging.critical('filter match:' + json.dumps(context))
+                    continue
+                    logging.critical('=====================filter match:' + json.dumps(context))
+
+            if not hit:
+                self.brand_unmatch_search_writer.writerow(context['row'])
+            else:
+                url = "https://list.tmall.com/m/search_items.htm?brand="
+                url += str(brandid)
+                context['search_brand'] += "_" + str(brandid)
+                req = scrapy.Request(url = url, headers = self.hheaders, cookies = self.parse_raw_cookie(self.cookies), callback = self.parse_search_result)
+                req.meta['context'] = context
+                yield req
 
 
 

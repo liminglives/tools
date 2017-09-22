@@ -1,55 +1,36 @@
-﻿Category,ProductName,Bloomberg Ticker,Brand,Store Type,SWA_Category 1,SWA_Category 2,YearMonth,Year,Month,Sales Unit,Sales Value
-Stock,Guyuelongshan,600059 CH EQUITY,沈永和,3rd Party,Wine/美酒,Warm Body Wine/暖身黄酒,201703,2017,3,203,5791
-Stock,Anzheng Fashion,603839 CH EQUITY,尹默,Official Store,Women's Branded Apparel/品牌女装,Vest/马夹,201708,2017,8,2,1336
-Stock,Shunxin Agriculture,000860 CH EQUITY,鹏程食品,3rd Party,Snacks/休闲零食,Instant Meat/肉类即食,201707,2017,7,220,8690
-Stock,ELLASSAY,603808 CH EQUITY,Ed Hardy ,Official Store,Women's Branded Apparel/品牌女装,Suspender / Vest/吊带/背心,201708,2017,8,16,10132
-Stock,Semir,002563 CH EQUITY,It MICHAA,Official Store,Women's Branded Apparel/品牌女装,Windbreaker/风衣,201708,2017,8,16,22010
-Stock,Anzheng Fashion,603839 CH EQUITY,Annakro/安娜蔻,Official Store,Women's Branded Apparel/品牌女装,Vest/马夹,201703,2017,3,135,60128
-Stock,Chalkis Health,000972 CH EQUITY,Chalkis/中基,Official Store,Snacks/休闲零食,Jujube/大枣/红枣,201707,2017,7,1,41
-Stock,Dohia home,002761 CH EQUITY,Lebilp/乐倍康,Official Store,Women's Branded Apparel/品牌女装,Business Suit/职业套装,201708,2017,8,809,103597
-Stock,Semir,002563 CH EQUITY,Minette,Official Store,Women's Branded Apparel/品牌女装,T-shirt/T恤,201708,2017,8,1,90
-Stock,Baoxiniao,002154 CH EQUITY,TOMBOLINI/东博利尼,3rd Party,Residential furniture/office furniture/住宅家具/办公家具,Restaurant/餐厅,201708,2017,8,28,12826
-Stock,Huzhu Barley Wine,002646 CH EQUITY,马克斯威,3rd Party,Imported food/进口食品,Imported Wine/进口酒,201708,2017,8,7,1106
-Stock,Gansu Gangtai,600687 CH EQUITY,米莱彩宝,Official Store,Jewelry/Diamond/Jade/Gold/珠宝/钻石/翡翠/黄金,Tourmaline Ring/碧玺戒指,201708,2017,8,14,52938
-Stock,Golden Seed Winery,600199 CH EQUITY,和泰,3rd Party,Hardware tools/五金/工具,Instruments & Apparatuses/仪器仪表,201708,2017,8,4,36343
-Stock,Gansu Gangtai,600687 CH EQUITY,KELA/珂兰,Official Store,Jewelry/Diamond/Jade/Gold/珠宝/钻石/翡翠/黄金,Wedding Ring/结婚钻戒,201708,2017,8,447,492608
-Stock,Royal Group,002329 CH EQUITY,皇氏,3rd Party,Drinks/冲饮,Dairy/乳制品,201708,2017,8,6,258
-Stock,Gaugen,870909 CH EQUITY,味立方,3rd Party,Cereal & Condiment/粮油调味,Condiment/调味品,201707,2017,7,141,2381
-Stock,Anzheng Fashion,603839 CH EQUITY,MICHELLE MOISSAC/摩萨克,Official Store,Women's Branded Apparel/品牌女装,Vest/马夹,201708,2017,8,1,552
-Stock,Chengde Lolo,000848 CH EQUITY,Lolo/露露,Official Store,Drinks/冲饮,Drink/Vegetable Juice/Water/饮料/蔬果汁/水,201708,2017,8,2548,201125
-Stock,Shanghai Maling,600073 CH EQUITY,联豪,Official Store,Kitchen/dining utensils/厨房/餐饮用具,Porcelain/Cutlery/瓷器/餐具,201708,2017,8,106,1049
-Stock,Markor International,600337 CH EQUITY,美克美家,Official Store,Tmall Books/天猫图书,Fiction/小说,201708,2017,8,1,3519
-Stock,By-health,300146 CH EQUITY,Merryplus/每日每加,3rd Party,N/A,NULL/NULL,201708,2017,8,17,2333
-Stock,Jiuzhou,000801 CH EQUITY,JEZETEK/九洲,Official Store,Audio and video/影音视听,Audio and Video Appliances Accessories/影音家电配件,201708,2017,8,2,17
-Stock,ELLASSAY,603808 CH EQUITY,IRO ,3rd Party,Women's Branded Apparel/品牌女装,Original Brand/设计师原创品牌,201704,2017,4,1,2320
-Stock,Sinoer,002485 CH EQUITY,MORDEL/美尔顿,Official Store,Mens's Branded Apparel/精品男装,Short-sleeved Shirt/短袖衬衫,201707,2017,7,3,503
-Stock,BIEM.L.FDLKK,002832 CH EQUITY,BIEM.L.FDLKK/比音勒芬,3rd Party,Sports Apparel/运动服,Polo Shirt/polo衫,201708,2017,8,12,5760
-Stock,Dong Yi Ri Sheng,002713 CH EQUITY,速美超级家,Official Store,Decoration services/装修服务,Decoration Design/装修设计,201708,2017,8,103,10257
-Stock,Mendale Home,002397 CH EQUITY,梦洁家纺,Official Store,Residential furniture/office furniture/住宅家具/办公家具,Mattress/床垫,201708,2017,8,21,41439
-Stock,Fuanna,002327 CH EQUITY,酷奇志,3rd Party,Home Textiles/Bedding/家纺/床上用品,Pillow/枕头/枕芯,201708,2017,8,222,18811
-Stock,Jiugui Liquor,000799 CH EQUITY,酒鬼酒,Official Store,Wine/美酒,Chinese Liquor/中国白酒,201708,2017,8,1707,597343
-Stock,Metersbonwe,002269 CH EQUITY,Me&City,Official Store,Sports Apparel/运动服,Windbreaker/风衣,201708,2017,8,68,36472
-Stock,Yanjing Beer,000729 CH EQUITY,九龙斋,3rd Party,Drinks/冲饮,Drink/Vegetable Juice/Water/饮料/蔬果汁/水,201707,2017,7,1042,62340
-Stock,Baoxiniao,002154 CH EQUITY,BONO/波诺,Official Store,Branded luggage/品牌箱包,Fashion Handbags/时尚女包,201706,2017,6,4,567
-Stock,Lafang,603630 CH EQUITY,Betrue/缤纯,3rd Party,Face Care/面部护肤,Other Facial Skin Care/其他保养,201603,2016,3,1,2
-Stock,ELLASSAY,603808 CH EQUITY,With Song/唯颂,Official Store,Women's shoes/时尚女鞋,Comfortable Flat Shoes/舒适平底单鞋,201708,2017,8,34,9641
-Stock,Haier,600690 CH EQUITY,GE Appliance,3rd Party,Car/supplies/accessories/modified/汽车/用品/配件/改装,Auto Accessories/汽车配件,201708,2017,8,83,29386
-Stock,Ming Jewelry,002574 CH EQUITY,明牌珠宝（MINGR 明）,Official Store,Jewelry/Diamond/Jade/Gold/珠宝/钻石/翡翠/黄金,Mall Edition/商场同款,201708,2017,8,41,54598
-Stock,Onlly,600530 CH EQUITY,Onlly/天然元,3rd Party,Dietary supplement/保健食品/膳食营养补充食品,Vitamins/Minerals/维生素/矿物质,201708,2017,8,18,1401
-Stock,Lonkey Industrial,000523 CH EQUITY,高富力,3rd Party,Household Cleaners/Tissues/家用清洁剂/纸品,Home Cleaning Agent/家庭清洁剂,201607,2016,7,6106,92363
-Stock,Shunxin Agriculture,000860 CH EQUITY,宁城老窖,3rd Party,Wine/美酒,Chinese Liquor/中国白酒,201708,2017,8,63,6532
-Stock,Shanghai Dragon,600630 CH EQUITY,钟牌414,3rd Party,Household Fabrics/居家布艺,Towel/Face Towel/毛巾/面巾,201708,2017,8,4994,63099
-Stock,Gaugen,870909 CH EQUITY,COCQBBQ/酷烤,3rd Party,Cereal & Condiment/粮油调味,Condiment/调味品,201701,2017,1,65,1879
-Stock,Jinzi Ham,002515 CH EQUITY,小老黄,3rd Party,Snacks/休闲零食,Pastry/Dessert/糕点/点心,201707,2017,7,760,28675
-Stock,Semir,002563 CH EQUITY,YUANDIAN/原点,Official Store,Women's Branded Apparel/品牌女装,T-shirt/T恤,201706,2017,6,1,158
-Stock,Fiyta,000026 CH EQUITY,Beijing/北京手表,Official Store,Branded Watch/Fashion Watch/品牌手表/时尚手表,Watch Strap/Accessories/表带/配件,201708,2017,8,23,4344
-Stock,Yili,600887 CH EQUITY,金领冠,Official Store,Milk powder/food supplement/nutrition/奶粉/辅食/营养品,Infant Milk Powder/婴幼儿奶粉,201706,2017,6,294,93282
-Stock,Suofeiya,002572 CH EQUITY,Sogal/索菲亚衣柜,3rd Party,Whole house custom funitures/全屋定制,Whole Wardrobe/整体衣柜,201708,2017,8,38,19000
-Stock,Lancy,002612 CH EQUITY,marie n°mary/玛丽安玛丽,Official Store,Women's Branded Apparel/品牌女装,Windbreaker/风衣,201708,2017,8,4,496
-Stock,Baoxiniao,002154 CH EQUITY,SOLOSALI/所罗,3rd Party,Mens's Branded Apparel/精品男装,Cotton Leisure Pants/全棉休闲裤,201701,2017,1,1,339
-Stock,COFCO Tunhe,600737 CH EQUITY,COFCO Tunhe/中粮屯河,Official Store,Wine/美酒,Warm Body Wine/暖身黄酒,201708,2017,8,109,15833
-Stock,Toly Bread,603866 CH EQUITY,Toly Bread/桃李面包,3rd Party,Snacks/休闲零食,Pastry/Dessert/糕点/点心,201706,2017,6,534,16092
-Stock,Yili,600887 CH EQUITY,PURE NUTRA/培然,Official Store,Milk powder/food supplement/nutrition/奶粉/辅食/营养品,Infant Milk Powder/婴幼儿奶粉,201707,2017,7,2,1192
-Stock,Hongdo,600400 CH EQUITY,Zuo,3rd Party,Sports Apparel/运动服,Short-sleeve T-shirt/短袖T恤,201708,2017,8,10,1533
-Stock,NanJi E-Commerce,002127 CH EQUITY,南极人＋,Official Store,Mens's Branded Apparel/精品男装,Leather Jacket/皮夹克,201708,2017,8,1,501
-Stock,Gujing Distillery,000596 CH EQUITY,古井,3rd Party,Wine/美酒,Chinese Liquor/中国白酒,201707,2017,7,148,29433
+ProductName,Bloomberg Ticker,Brand,Store Type,SWA_Category 1,SWA_Category 2,YearMonth,Year,Month,Sales Unit,Sales Value
+
+==Lafang,603630 CH EQUITY,Betrue/缤纯,3rd Party,Face Care/面部护肤,Other Facial Skin Care/其他保养,201603,2016,3,1,2
+
+==Baoxiniao,002154 CH EQUITY,BONO/波诺,Official Store,Branded luggage/品牌箱包,Fashion Handbags/时尚女包,201706,2017,6,4,567
+
+Metersbonwe,002269 CH EQUITY,Me&City,Official Store,Sports Apparel/运动服,Windbreaker/风衣,201708,2017,8,68,36472
+
+--Jiugui Liquor,000799 CH EQUITY,酒鬼,Official Store,Wine/美酒,Chinese Liquor/中国白酒,201708,2017,8,1707,597343
+
+--Mendale Home,002397 CH EQUITY,梦洁,Official Store,Residential furniture/office furniture/住宅家具/办公家具,Mattress/床垫,201708,2017,8,21,41439
+
+==Sinoer,002485 CH EQUITY,MORDEL/美尔顿,Official Store,Mens's Branded Apparel/精品男装,Short-sleeved Shirt/短袖衬衫,201707,2017,7,3,503
+
+ELLASSAY,603808 CH EQUITY,IRO ,3rd Party,Women's Branded Apparel/品牌女装,Original Brand/设计师原创品牌,201704,2017,4,1,2320
+
+--Jiuzhou,000801 CH EQUITY,JEZETEK/九洲（电子）,Official Store,Audio and video/影音视听,Audio and Video Appliances Accessories/影音家电配件,201708,2017,8,2,17
+
+Markor International,600337 CH EQUITY,美克美家,Official Store,Tmall Books/天猫图书,Fiction/小说,201708,2017,8,1,3519
+
+==Baoxiniao,002154 CH EQUITY,SOLOSALI/所罗,3rd Party,Mens's Branded Apparel/精品男装,Cotton Leisure Pants/全棉休闲裤,201701,2017,1,1,339
+
+Fiyta,000026 CH EQUITY,Beijing/北京手表,Official Store,Branded Watch/Fashion Watch/品牌手表/时尚手表,Watch Strap/Accessories/表带/配件,201708,2017,8,23,4344
+
+==Semir,002563 CH EQUITY,YUANDIAN/原点,Official Store,Women's Branded Apparel/品牌女装,T-shirt/T恤,201706,2017,6,1,158
+
+Gaugen,870909 CH EQUITY,COCQBBQ/酷烤,3rd Party,Cereal & Condiment/粮油调味,Condiment/调味品,201701,2017,1,65,1879
+
+Shanghai Dragon,600630 CH EQUITY,钟牌414,3rd Party,Household Fabrics/居家布艺,Towel/Face Towel/毛巾/面巾,201708,2017,8,4994,63099
+
+--Shanghai Maling,600073 CH EQUITY,联豪食品,Official Store,Kitchen/dining utensils/厨房/餐饮用具,Porcelain/Cutlery/瓷器/餐具,201708,2017,8,106,1049
+
+--Royal Group,002329 CH EQUITY,皇氏乳业,3rd Party,Drinks/冲饮,Dairy/乳制品,201708,2017,8,6,258
+
+--Shunxin Agriculture,000860 CH EQUITY,岛城鹏程,3rd Party,Snacks/休闲零食,Instant Meat/肉类即食,201707,2017,7,220,8690
+
