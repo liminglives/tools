@@ -3,6 +3,8 @@
 from bs4 import BeautifulSoup
 import urllib2
 import logging
+import requests
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +49,29 @@ def img2port(img_url):
         return 80
     else:
         return None
+
+def fetch_mimvp_fee():
+    proxyes = []
+    try:
+        print 'aaaaaaaaaaaaa'
+        url = 'https://proxy.mimvp.com/api/fetch.php?orderid=860170926164026729&num=100&http_type=2&result_fields=1,2'
+        res = requests.get(url = url, verify = False)
+        print 'mimvp fee status', res.status_code
+        if int(res.status_code) == 200 and res.text.find('ERROR') == -1:
+            arr = res.text.split('\n')
+            for item in arr:
+                item = item.strip()
+                a = item.split(',')
+                if len(a) == 2:
+                    if a[1].find('HTTPS') != -1:
+                        proxyes.append(a[0].strip())
+                elif len(a) == 1:
+                    proxyes.append(a[0])
+    except Exception, e:
+        logger.warning('fail to fetch from mimvp fee ' + str(e))
+
+    return proxyes
+
 
 def fetch_mimvp():
     """
@@ -94,6 +119,47 @@ def fetch_xici():
         logger.warning("fail to fetch from xici")
     return proxyes
 
+def fetch_xici_fee():
+    proxyes = []
+    try:
+        url = 'http://vtp.daxiangdaili.com/ip/?tid=559394621801753&num=1000&protocol=https&filter=on&longlife=20'
+        res = requests.get(url = url)
+        if int(res.status_code) == 200 and res.text.find('ERROR') == -1:
+            arr = res.text.split('\n')
+            for ip in arr:
+                ip = ip.strip()
+                if len(ip) > 8:
+                    proxyes.append(ip)
+    except:
+        logger.warning('fail to fetch from xici fee')
+
+    return proxyes
+
+def fetch_xdaili_fee():
+    proxyes = []
+    try:
+        url = 'http://api.xdaili.cn/xdaili-api//privateProxy/getDynamicIP/DD20179268842LI0gdt/d0c3c34bf83211e6942200163e1a31c0?returnType=2'
+        #url = 'http://api.xdaili.cn/xdaili-api//greatRecharge/getGreatIp?spiderId=199f073d3f0246698cd2a4e3a9fdfe95&orderno=YZ20179267433YBhYdh&returnType=2&count=15'
+        res = requests.get(url = url)
+        if int(res.status_code) == 200:
+            print res.text
+            j = json.loads(res.text)
+            if int(j['ERRORCODE']) == 0:
+                if isinstance(j['RESULT'], list):
+                    for i in j['RESULT']:
+                        ip = i['ip']
+                        port = i['port']
+                        proxyes.append('%s:%s' % (ip, port))
+                else:
+                    ip = j['RESULT']['wanIp']
+                    port = j['RESULT']['proxyport']
+                    proxyes.append('%s:%s' % (ip, port))
+    except:
+        logger.warning('failed to fetch from xdaili fee')
+
+
+    return proxyes
+
 def fetch_ip181():
     """
     http://www.ip181.com/
@@ -114,6 +180,28 @@ def fetch_ip181():
     except Exception as e:
         logger.warning("fail to fetch from ip181: %s" % e)
     return proxyes
+
+def fetch_xudailifree():
+    """
+    http://www.ip181.com/
+    """
+    proxyes = []
+    try:
+        url = "http://www.xdaili.cn/freeproxy"
+        soup = get_soup(url)
+        table = soup.find("table")
+        trs = table.find_all("tr")
+        for i in range(1, len(trs)):
+            tds = trs[i].find_all("td")
+            ip = tds[0].text
+            port = tds[1].text
+            latency = tds[5].text
+            if float(latency) < 3:
+                proxyes.append("%s:%s" % (ip, port))
+    except Exception as e:
+        logger.warning("fail to fetch from xdaili free: %s" % e)
+    return proxyes
+
 
 def fetch_httpdaili():
     """
@@ -141,7 +229,7 @@ def fetch_httpdaili():
     return proxyes
 
 def fetch_66ip():
-    """    
+    """
     http://www.66ip.cn/
     每次打开此链接都能得到一批代理, 速度不保证
     """
@@ -158,17 +246,17 @@ def fetch_66ip():
         logger.warning("fail to fetch from httpdaili: %s" % e)
     return proxyes
 
-    
+
 
 def check(proxy):
     import urllib2
     #url = "http://www.baidu.com/js/bdsug.js?v=1.0.3.0"
     url = 'https://www.tmall.com/'
     #url = 'http://www.tmall.com/'
-    proxy_handler = urllib2.ProxyHandler({'http': "http://" + proxy})
+    proxy_handler = urllib2.ProxyHandler({'https': "https://" + proxy})
     opener = urllib2.build_opener(proxy_handler,urllib2.HTTPHandler)
     try:
-        response = opener.open(url,timeout=3)
+        response = opener.open(url,timeout=1)
         return response.code == 200 and response.url == url
     except Exception:
         print 'failed', proxy
@@ -176,13 +264,17 @@ def check(proxy):
 
 def fetch_all(endpage=2):
     proxyes = []
-    for i in range(1, endpage):
-        proxyes += fetch_kxdaili(i)
-    proxyes += fetch_mimvp()
-    proxyes += fetch_xici()
-    proxyes += fetch_ip181()
-    proxyes += fetch_httpdaili()
-    proxyes += fetch_66ip()
+    #for i in range(1, endpage):
+    #    proxyes += fetch_kxdaili(i)
+    #proxyes += fetch_mimvp()
+    #proxyes += fetch_xici()
+    #proxyes += fetch_ip181()
+    #proxyes += fetch_httpdaili()
+    #proxyes += fetch_66ip()
+    #proxyes += fetch_xudailifree()
+    proxyes += fetch_xdaili_fee()
+    #proxyes += fetch_xici_fee()
+    #proxyes += fetch_mimvp_fee()
     valid_proxyes = []
     logger.info("checking proxyes validation")
     for p in proxyes:

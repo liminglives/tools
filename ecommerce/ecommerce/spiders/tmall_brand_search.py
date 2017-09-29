@@ -75,9 +75,6 @@ class TmallBrandSearchSpider(scrapy.Spider):
     def start_request(self):
         logging.info('================== start request')
 
-
-
-
         yield scrapy.Request(
             url = self.start_urls[0],
             headers = self.hheaders,
@@ -86,6 +83,7 @@ class TmallBrandSearchSpider(scrapy.Spider):
 
     def parse(self, response):
         logging.info('33333333333333333333333333333333333333333333333333333')
+        logging.info('66666666666666 proxy:' + str(response.meta.get('proxy', None)))
         self.brand_cate_search_f = open('brand_cat_search.csv', 'wb')
         self.fieldnames = ['BrandId', 'BrandName', 'CatId', 'CatName']
         self.brand_cat_writer = csv.DictWriter(self.brand_cate_search_f, fieldnames = self.fieldnames)
@@ -115,10 +113,8 @@ class TmallBrandSearchSpider(scrapy.Spider):
         return val
 
     def get_brandid_and_catid_by_brandname(self):
-        brand_f = open('brand_unmatch_raw.csv')
+        brand_f = open('brand_unmatch_test.csv')
         reader = csv.DictReader(brand_f)
-
-
 
         for row in reader:
             info = {}
@@ -146,6 +142,7 @@ class TmallBrandSearchSpider(scrapy.Spider):
             context['brand'] = brand.lower()
             context['brand_en'] = brand_en.lower() if brand_en else brand_en
             context['brand_cn'] = brand_cn
+            context['url'] = url
 
             req = scrapy.Request(url = url, headers = self.hheaders, cookies = self.parse_raw_cookie(self.cookies), callback = self.parse_search_result)
             req.meta['context'] = context
@@ -155,12 +152,20 @@ class TmallBrandSearchSpider(scrapy.Spider):
 
 
     def parse_search_result(self, response):
+        logging.info('66666666666666 proxy:' + str(response.meta.get('proxy', None)))
         if response.status != 200:
             logging.info('============= response status '+str(response.status))
             return
-        context = response.meta['context']
-        data = unicode(response.body, errors = 'replace')
-        j = json.loads(data)
+        try:
+            context = response.meta['context']
+            data = unicode(response.body, errors = 'replace')
+            j = json.loads(data)
+        except:
+            req = scrapy.Request(url = url, headers = self.hheaders, cookies = self.parse_raw_cookie(self.cookies), callback = self.parse_search_result)
+            req.meta['context'] = context
+            req.meta['change_proxy'] = True
+            yield req
+
 
         brand_list = j['brand_list']
         cat_list = j['cat_list']
@@ -177,7 +182,7 @@ class TmallBrandSearchSpider(scrapy.Spider):
                 info['ProductName'] = context['row']['ProductName']
                 info['BrandName'] = brand_name_searched
                 info['BrandId'] = brand_id_searched
-                self.brand_match_search_writer.writerow(info)   
+                self.brand_match_search_writer.writerow(info)
 
                 for cat in cat_list:
                     info= {}
@@ -192,7 +197,7 @@ class TmallBrandSearchSpider(scrapy.Spider):
                     info['BrandId'] = brand_id_searched
                     info['CatName'] = ""
                     info['CatId'] = ""
-                    self.brand_cat_writer.writerow(info) 
+                    self.brand_cat_writer.writerow(info)
             else:
                 logging.critical('no brand:' + json.dumps(context))
                 self.brand_unmatch_search_writer.writerow(context['row'])
@@ -235,7 +240,7 @@ class TmallBrandSearchSpider(scrapy.Spider):
                 minisite = j['minisites'][0]
             brandid = None
             for brand in brand_list:
-                if minisite != None and brand['brand_id'] == minisite['id']: 
+                if minisite != None and brand['brand_id'] == minisite['id']:
                     brandid = brand['brand_id']
                     hit = True
                     break
@@ -258,6 +263,7 @@ class TmallBrandSearchSpider(scrapy.Spider):
                 url = "https://list.tmall.com/m/search_items.htm?brand="
                 url += str(brandid)
                 context['search_brand'] += "_" + str(brandid)
+                context['url'] = url
                 req = scrapy.Request(url = url, headers = self.hheaders, cookies = self.parse_raw_cookie(self.cookies), callback = self.parse_search_result)
                 req.meta['context'] = context
                 yield req

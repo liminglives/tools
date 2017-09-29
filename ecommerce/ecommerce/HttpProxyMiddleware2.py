@@ -1,11 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 import os
 import logging
 from datetime import datetime, timedelta
 from twisted.web._newclient import ResponseNeverReceived
 from twisted.internet.error import TimeoutError, ConnectionRefusedError, ConnectError
 import fetch_proxy_ip_pool
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +16,7 @@ class ProxyMiddleware(object):
     DONT_RETRY_ERRORS = (TimeoutError, ConnectionRefusedError, ResponseNeverReceived, ConnectError, ValueError)
 
     def __init__(self, settings):
+        logger.info('99999999999999999999999999999999999999999999999999999999999999999999')
         # 保存上次不用代理直接连接的时间点
         self.last_no_proxy_time = datetime.now()
         # 一定分钟数后切换回不用代理, 因为用代理影响到速度
@@ -29,7 +32,7 @@ class ProxyMiddleware(object):
         # 如果这个数过小, 例如两个, 爬虫用A ip爬了没几个就被ban, 换了一个又爬了没几次就被ban, 这样整个爬虫就会处于一种忙等待的状态, 影响效率
         self.extend_proxy_threshold = 10
         # 初始化代理列表
-        self.proxyes = [{"proxy": None, "valid": True, "count": 0}]
+        self.proxyes = [] #[{"proxy": None, "valid": True, "count": 0, 'time': 0}]
         # 初始时使用0号代理(即无代理)
         self.proxy_index = 0
         # 表示可信代理的数量(如自己搭建的HTTP代理)+1(不用代理直接连接)
@@ -48,9 +51,9 @@ class ProxyMiddleware(object):
                     line = line.strip()
                     if not line or self.url_in_proxyes("https://" + line):
                         continue
-                    self.proxyes.append({"proxy": "https://"  + line,
-                            "valid": True,
-                            "count": 0})
+                    self.proxyes.append({"proxy": "https://"  + line, "valid": True, "count": 0, 'time': 0})
+        else:
+            self.fetch_new_proxyes()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -74,14 +77,19 @@ class ProxyMiddleware(object):
             if p["count"] >= self.dump_count_threshold:
                 p["valid"] = True
 
-    def fetch_new_proxy(self):
+    def fetch_new_proxyes(self, force = False):
         """
         从网上抓取新的代理添加到代理列表中
         """
-        logger.info("extending proxyes using fetch_free_proxyes.py")
+        logger.info("extending proxyes using fetch_proxy_ip_pool")
+
+        if force == False and datetime.now() < self.last_fetch_proxy_time + timedelta(minutes=self.fetch_proxy_interval):
+            return
+
         new_proxyes = fetch_proxy_ip_pool.fetch_all()
         logger.info("new proxyes: %s" % new_proxyes)
         self.last_fetch_proxy_time = datetime.now()
+        logger.info('9999999999999999999999999999999999999999999999999999999999999 fetch ip')
 
         for np in new_proxyes:
             if self.url_in_proxyes("https://" + np):
@@ -89,9 +97,13 @@ class ProxyMiddleware(object):
             else:
                 self.proxyes.append({"proxy": "https://"  + np,
                                      "valid": True,
-                                     "count": 0})
+                                     "count": 0,
+                                     'time' : 0})
+                logger.info('9999999 append fetch ip : ' + str(np))
         if self.len_valid_proxy() < self.extend_proxy_threshold: # 如果发现抓不到什么新的代理了, 缩小threshold以避免白费功夫
             self.extend_proxy_threshold -= 1
+
+        assert self.len_proxy() != 0
 
     def len_valid_proxy(self):
         """
@@ -103,48 +115,71 @@ class ProxyMiddleware(object):
                 count += 1
         return count
 
+    def len_proxy(self):
+        return len(self.proxyes)
+
     def inc_proxy_index(self):
         """
         将代理列表的索引移到下一个有效代理的位置
         如果发现代理列表只有fixed_proxy项有效, 重置代理列表
         如果还发现已经距离上次抓代理过了指定时间, 则抓取新的代理
         """
-        assert self.proxyes[0]["valid"]
+        #assert self.proxyes[0]["valid"]
+        retry = 0
+        fetched = False
         while True:
-            self.proxy_index = (self.proxy_index + 1) % len(self.proxyes)
-            if self.proxyes[self.proxy_index]["valid"]:
+            if retry > 2:
+                logger.error("no more valid ip even fetched new proxy")
+                exit(1)
+            found = False
+            for i in range(self.len_proxy()):
+                self.proxy_index = (self.proxy_index + 1) % len(self.proxyes)
+                if self.proxyes[self.proxy_index]["valid"]:
+                    found = True
+                    break
+            if found:
                 break
 
+            self.fetch_new_proxyes(force=True)
+            fetched = True
+            retry += 1
+
+        now_ts = time.time()
         # 两轮proxy_index==0的时间间隔过短， 说明出现了验证码抖动，扩展代理列表
-        if self.proxy_index == 0 and datetime.now() < self.last_no_proxy_time + timedelta(minutes=2):
-            logger.info("captcha thrashing")
-            self.fetch_new_proxy()
+        #if self.proxy_index == 0 and datetime.now() < self.last_no_proxy_time + timedelta(minutes=2):
+        #    logger.info("captcha thrashing")
+        #    self.fetch_new_proxyes()
+
+        if fetched is False and now_ts - self.proxyes[self.proxy_index]['time'] < 5:
+            self.fetch_new_proxyes()
 
         if self.len_valid_proxy() <= self.fixed_proxy or self.len_valid_proxy() < self.extend_proxy_threshold: # 如果代理列表中有效的代理不足的话重置为valid
             self.reset_proxyes()
 
-        if self.len_valid_proxy() < self.extend_proxy_threshold: # 代理数量仍然不足, 抓取新的代理
+        if fetched is False and self.len_valid_proxy() < self.extend_proxy_threshold: # 代理数量仍然不足, 抓取新的代理
             logger.info("valid proxy < threshold: %d/%d" % (self.len_valid_proxy(), self.extend_proxy_threshold))
-            self.fetch_new_proxy()
+            self.fetch_new_proxyes()
 
         logger.info("now using new proxy: %s" % self.proxyes[self.proxy_index]["proxy"])
 
         # 一定时间没更新后可能出现了在目前的代理不断循环不断验证码错误的情况, 强制抓取新代理
         #if datetime.now() > self.last_fetch_proxy_time + timedelta(minutes=self.fetch_proxy_interval):
         #    logger.info("%d munites since last fetch" % self.fetch_proxy_interval)
-        #    self.fetch_new_proxy()
+        #    self.fetch_new_proxyes()
 
     def set_proxy(self, request):
         """
         将request设置使用为当前的或下一个有效代理
         """
+        #proxy = self.proxyes[self.proxy_index]
+        #if not proxy["valid"]:
+        #    self.inc_proxy_index()
+        #    proxy = self.proxyes[self.proxy_index]
+        self.inc_proxy_index()
         proxy = self.proxyes[self.proxy_index]
-        if not proxy["valid"]:
-            self.inc_proxy_index()
-            proxy = self.proxyes[self.proxy_index]
 
-        if self.proxy_index == 0: # 每次不用代理直接下载时更新self.last_no_proxy_time
-            self.last_no_proxy_time = datetime.now()
+        #if self.proxy_index == 0: # 每次不用代理直接下载时更新self.last_no_proxy_time
+        #    self.last_no_proxy_time = datetime.now()
 
         if proxy["proxy"]:
             request.meta["proxy"] = proxy["proxy"]
@@ -152,6 +187,7 @@ class ProxyMiddleware(object):
             del request.meta["proxy"]
         request.meta["proxy_index"] = self.proxy_index
         proxy["count"] += 1
+        proxy['time'] = time.time()
 
     def invalid_proxy(self, index):
         """
@@ -188,10 +224,11 @@ class ProxyMiddleware(object):
         """
         将request设置为使用代理
         """
-        if self.proxy_index > 0  and datetime.now() > (self.last_no_proxy_time + timedelta(minutes=self.recover_interval)):
-            logger.info("After %d minutes later, recover from using proxy" % self.recover_interval)
-            self.last_no_proxy_time = datetime.now()
-            self.proxy_index = 0
+        logger.info('99999999999999999999999999999999999999999999999 process request')
+        #if self.proxy_index > 0  and datetime.now() > (self.last_no_proxy_time + timedelta(minutes=self.recover_interval)):
+        #    logger.info("After %d minutes later, recover from using proxy" % self.recover_interval)
+        #    self.last_no_proxy_time = datetime.now()
+        #    self.proxy_index = 0
         request.meta["dont_redirect"] = True  # 有些代理会把请求重定向到一个莫名其妙的地址
 
         # spider发现parse error, 要求更换代理
@@ -202,6 +239,7 @@ class ProxyMiddleware(object):
         self.set_proxy(request)
 
     def process_response(self, request, response, spider):
+        logger.info('99999999999999999999999999999999999999999999999999999999999999999999 process response')
         """
         检查response.status, 根据status是否在允许的状态码中决定是否切换到下一个proxy, 或者禁用proxy
         """
@@ -212,9 +250,9 @@ class ProxyMiddleware(object):
 
         # status不是正常的200而且不在spider声明的正常爬取过程中可能出现的
         # status列表中, 则认为代理无效, 切换代理
-        if response.status != 200 \
-                and (not hasattr(spider, "website_possible_httpstatus_list") \
-                             or response.status not in spider.website_possible_httpstatus_list):
+        if response.status != 200:
+            #    and (not hasattr(spider, "website_possible_httpstatus_list") \
+            #                 or response.status not in spider.website_possible_httpstatus_list):
             logger.info("response status not in spider.website_possible_httpstatus_list")
             self.invalid_proxy(request.meta["proxy_index"])
             new_request = request.copy()
@@ -227,6 +265,7 @@ class ProxyMiddleware(object):
         """
         处理由于使用代理导致的连接异常
         """
+        logger.info('99999999999999999999999999999999999999999999999999999999999999999999 process exception')
         logger.debug("%s exception: %s" % (self.proxyes[request.meta["proxy_index"]]["proxy"], exception))
         request_proxy_index = request.meta["proxy_index"]
 
@@ -243,3 +282,4 @@ class ProxyMiddleware(object):
             new_request = request.copy()
             new_request.dont_filter = True
             return new_request
+

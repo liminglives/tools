@@ -28,6 +28,7 @@ ROBOTSTXT_OBEY = False
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 3
+DOWNLOAD_TIMEOUT = 5
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -49,12 +50,18 @@ COOKIES_ENABLED = True
 #SPIDER_MIDDLEWARES = {
 #    'ecommerce.middlewares.EcommerceSpiderMiddleware': 543,
 #}
-
+RETRY_ENABLED = False
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'ecommerce.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
+    #'scrapy.contrib.downloadermiddleware.retry.RetryMiddleware': 351,
+    'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
+    #'ecommerce.HttpProxyMiddleware2.ProxyMiddleware': 100,
+    #'ecommerce.HttpProxyMiddleware.ProxyMiddleware': 100,
+    'ecommerce.middlewares.ProxyPoolMiddleware': 100,
+
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -65,10 +72,7 @@ COOKIES_ENABLED = True
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'ecommerce.pipelines.EcommercePipeline': 300,
-    'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
-    'scrapy.contrib.downloadermiddleware.retry.RetryMiddleware': 351,
-    'crawler.middlewares.HttpProxyMiddleware': 999,
+    #'ecommerce.pipelines.DataFrameExportPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

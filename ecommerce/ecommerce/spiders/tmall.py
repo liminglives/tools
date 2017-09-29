@@ -57,7 +57,7 @@ class TmallSpider(scrapy.Spider):
         yield scrapy.Request(
             url = self.start_urls[0],
             headers = self.hheaders,
-            cookies = self.parse_raw_cookie(self.cookies),
+            #cookies = self.parse_raw_cookie(self.cookies),
             callback = self.parse)
 
     def parse(self, response):
@@ -69,19 +69,19 @@ class TmallSpider(scrapy.Spider):
 
         self.cat_brand_file = 'brand_cat_search.csv'
 
-        self.ff = open('brand_cat_search.csv')  
+        self.ff = open('brand_cat_search_all.csv')
         self.cat_brand_reader = csv.DictReader(self.ff)
-        
+
         return self.get_goods_by_catid_and_brandid()
 
     def get_goods_by_catid_and_brandid(self):
 
-        brand_id_dict = {}
-        with open('brand_match_search.csv') as readf:
-            readr = csv.DictReader(readf)
-            for row in readr:
-                brand_id_dict[row['BrandId']] = row
-        logging.info('---------- get goods')
+        #brand_id_dict = {}
+        #with open('brand_match_search.csv') as readf:
+        #    readr = csv.DictReader(readf)
+        #    for row in readr:
+        #        brand_id_dict[row['BrandId']] = row
+        #logging.info('---------- get goods')
 
         for row in self.cat_brand_reader:
 
@@ -94,15 +94,18 @@ class TmallSpider(scrapy.Spider):
             else:
                 self.cat_brand_set.add(cat_brand_id)
 
-            if brand_id not in brand_id_dict:
-                continue
+            #if brand_id not in brand_id_dict:
+            #    continue
 
-            url = 'https://list.tmall.com/m/search_items.htm?style=list'            
+            url = 'https://list.tmall.com/m/search_items.htm?style=list'
             url += '&brand=' + brand_id
             if len(cat_id) > 0:
                 url += '&cat=' + cat_id
 
-            req = scrapy.Request(url = url, headers = self.hheaders, cookies = self.parse_raw_cookie(self.cookies), callback = self.parse_goods_list)
+            req = scrapy.Request(url = url,
+                    headers = self.hheaders,
+                    #cookies = self.parse_raw_cookie(self.cookies),
+                    callback = self.parse_goods_list)
             req.meta['brand_id'] = brand_id
             req.meta['cat_id'] = cat_id
             req.meta['page_no'] = 1
@@ -147,7 +150,10 @@ class TmallSpider(scrapy.Spider):
                 url += '&cat=' + cat_id
             url += '&brand=' + brand_id
             url += '&page_no=' + str(page_no)
-            req = scrapy.Request(url = url, headers = self.hheaders, cookies = self.parse_raw_cookie(self.cookies), callback = self.parse_goods_list)
+            req = scrapy.Request(url = url,
+                    headers = self.hheaders,
+                    #cookies = self.parse_raw_cookie(self.cookies),
+                    callback = self.parse_goods_list)
             req.meta['brand_id'] = brand_id
             req.meta['cat_id'] = cat_id
             req.meta['page_no'] = page_no
