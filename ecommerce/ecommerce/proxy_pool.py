@@ -22,7 +22,7 @@ class ProxyPool(threading.Thread):
         self.fetching = False
         self.update_interval = 15
         self.running_flag = True
-        self.load()
+        #self.load()
 
     def get_html(self, url):
         request = urllib2.Request(url)
@@ -135,6 +135,23 @@ class ProxyPool(threading.Thread):
             logger.warning("fail to fetch from xici")
         return proxyes
 
+    def fecth_goubanjia_fee(self):
+        proxyes = []
+        try:
+            order = '1111'
+            url = "http://dynamic.goubanjia.com/dynamic/get/" + order + ".html"
+            res = requests.get(url = url)
+            if int(res.status_code) == 200:
+                arr = res.text.split('\n')
+                for ip in arr:
+                    ip = ip.strip()
+                    if len(ip) > 8:
+                        proxyes.append(ip)
+        except:
+            logger.warning('falled to fetch proxy from goubanjia fee')
+
+        return proxyes
+
     def fetch_xici_fee(self):
         proxyes = []
         try:
@@ -154,8 +171,11 @@ class ProxyPool(threading.Thread):
     def fetch_xdaili_fee(self):
         proxyes = []
         try:
-            url = 'http://api.xdaili.cn/xdaili-api//privateProxy/getDynamicIP/DD20179268842LI0gdt/d0c3c34bf83211e6942200163e1a31c0?returnType=2'
+            #url = 'http://api.xdaili.cn/xdaili-api//privateProxy/getDynamicIP/DD20179268842LI0gdt/d0c3c34bf83211e6942200163e1a31c0?returnType=2'
             #url = 'http://api.xdaili.cn/xdaili-api//greatRecharge/getGreatIp?spiderId=199f073d3f0246698cd2a4e3a9fdfe95&orderno=YZ20179267433YBhYdh&returnType=2&count=15'
+            #url = 'http://api.xdaili.cn/xdaili-api//newExclusive/getIp?spiderId=199f073d3f0246698cd2a4e3a9fdfe95&orderno=MF20179297691biR1yS&returnType=2&count=1&machineArea='
+            #url = 'http://api.xdaili.cn/xdaili-api//privateProxy/applyStaticProxy?spiderId=199f073d3f0246698cd2a4e3a9fdfe95&returnType=2&count=1'
+            url = 'http://api.xdaili.cn/xdaili-api//privateProxy/applyStaticProxy?spiderId=199f073d3f0246698cd2a4e3a9fdfe95&returnType=2&count=1'
             res = requests.get(url = url)
             if int(res.status_code) == 200:
                 print res.text
@@ -296,6 +316,7 @@ class ProxyPool(threading.Thread):
             if retry > 1:
                 return None
             retry += 1
+            time.sleep(6)
 
         key = random.choice(self.proxy_dict.keys())
 
@@ -309,7 +330,8 @@ class ProxyPool(threading.Thread):
         if idx != -1:
             proxy = proxy[idx + len('//'):]
         if proxy in self.proxy_dict:
-            self.proxy_dict.pop(proxy)
+            v = self.proxy_dict.pop(proxy)
+            self.invalid_proxy_dict[proxy] = v
 
     def update_proxy(self):
         proxy_list = self.fetch_all()
@@ -319,6 +341,8 @@ class ProxyPool(threading.Thread):
             self.proxy_list.append({'http':'http://'+p, 'https':'https://'+p, 'count':0, 'valid':True, 'time': 0})
             if p not in self.proxy_dict:
                 self.proxy_dict[p] = {'http':'http://'+p, 'https':'https://'+p, 'count':0, 'time': 0}
+            if p in self.invalid_proxy_dict:
+                print p, 'has been set invalid'
 
     def quit(self):
         self.running_flag = False
@@ -343,15 +367,16 @@ class ProxyPool(threading.Thread):
             return
         self.fetching = True
         proxyes = []
-        for i in range(1, endpage):
-            proxyes += self.fetch_kxdaili(i)
-        proxyes += self.fetch_mimvp()
-        proxyes += self.fetch_xici()
-        proxyes += self.fetch_ip181()
-        proxyes += self.fetch_httpdaili()
-        proxyes += self.fetch_66ip()
-        proxyes += self.fetch_xudailifree()
-        #proxyes += self.fetch_xdaili_fee()
+        #for i in range(1, endpage):
+        #    proxyes += self.fetch_kxdaili(i)
+        #proxyes += self.fetch_mimvp()
+        #proxyes += self.fetch_xici()
+        #proxyes += self.fetch_ip181()
+        #proxyes += self.fetch_httpdaili()
+        #proxyes += self.fetch_66ip()
+        #proxyes += self.fetch_xudailifree()
+        proxyes += self.fetch_xdaili_fee()
+
         #proxyes += self.fetch_xici_fee()
         #proxyes += self.fetch_mimvp_fee()
         valid_proxyes = []

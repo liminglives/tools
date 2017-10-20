@@ -18,20 +18,17 @@ class TmallGoodsItem(scrapy.Item):
     CatName = scrapy.Field()
     BrandId = scrapy.Field()
     BrandName = scrapy.Field()
-    ProductName = scrapy.Field()
-    FinancialType = scrapy.Field()
-    BloombergTicker = scrapy.Field()
+
+    ShopId = scrapy.Field()
+    SellerId = scrapy.Field()
+    ShopUrl = scrapy.Field()
 
     PageNo = scrapy.Field()
     Title = scrapy.Field()
     Url = scrapy.Field()
-    Price = scrapy.Field()
     Sold = scrapy.Field()
-    ShopName = scrapy.Field()
-    ShopId = scrapy.Field()
-    RealShopId = scrapy.Field()
-    SellerId = scrapy.Field()
-    Location = scrapy.Field()
+    Quantity = scrapy.Field()
+    TotalSoldQuantity = scrapy.Field()
 
 class TmallGoodsMergedItem(scrapy.Item):
     CatId = scrapy.Field()
@@ -47,7 +44,7 @@ class TmallGoodsMergedItem(scrapy.Item):
 
 
 class TmallGoodsListSpider(scrapy.Spider):
-    name = 'tmall_goods_list'
+    name = 'tmall_goods_list_total'
     allowed_domains = ['tmall.com']
     url_host = "https://list.tmall.com"
     url_path = "/search_product.htm?q="
@@ -57,10 +54,10 @@ class TmallGoodsListSpider(scrapy.Spider):
     ]
     seq = 0
     cat_data = {}
-    cat_brand_set = set()
+    cat_shop_set = set()
 
     custom_settings = {
-        'DOWNLOAD_DELAY': 0.2,
+        #'DOWNLOAD_DELAY': 0.2,
         'ITEM_PIPELINES':{
             'ecommerce.pipelines.DataFrameExportPipeline': 400,
          },
@@ -79,10 +76,12 @@ class TmallGoodsListSpider(scrapy.Spider):
         "Cache-control":"max-age=0",
         #"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
         "user-agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Mobile Safari/537.36",
-        "referer":"https://list.tmall.com/search_product.htm?q=%C2%B6%C2%B6&type=p&tmhkh5=&spm=a220m.6910245.a2227oh.d100&from=mallfp..m_1_searchbutton",
+        #"referer":"https://list.tmall.com/search_product.htm?q=%C2%B6%C2%B6&type=p&tmhkh5=&spm=a220m.6910245.a2227oh.d100&from=mallfp..m_1_searchbutton",
     }
 
-    cookies = '_med=dw:1600&dh:900&pw:1600&ph:900&ist:0; x=__ll%3D-1%26_ato%3D0; otherx=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0; _m_h5_tk=4cb87896fa3e2642155cec8b438f063a_1505902901233; _m_h5_tk_enc=2856eb7faab1c280da1bbde6a98d889f; l=ArS04LLut-CdwVfxKgUpbBTxBGkmjdh3; hng=;uc3=sg2=BxJP6B4LIzYp%2BV%2FeLdBOLaNf0NmeFCORECuWx8Ma3M8%3D&nk2=D8rrz16wbO1El74%3D&id2=UUBYjOisWsBJ&vt3=F8dBzWjIBaCuVky0N1w%3D&lg2=UtASsssmOIJ0bQ%3D%3D; tracknick=liminglives; _l_g_=Ug%3D%3D; ck1=; unb=280885558; lgc=liminglives; cookie1=UteENoRLXAOT%2BQe4R3C3NjlYJE5myu%2FmfsWEhtDjoqc%3D; login=true; cookie17=UUBYjOisWsBJ; cookie2=1a2567888b15a3722be9e2ee85c7dfd7; _nk_=liminglives; t=160b81ebbba3d0e1ebf6bdcc3767a4ec;uss=VqglGTe%2F5%2BhtUjSaGknHfeK1MMviMewwJzoQJXkvDrKk7e%2FHTYIyVJEknsY%3D; skt=f1398af28acff111; _tb_token_=33f7b87733376; cq=ccp%3D0; cna=VtDTERQLnmwCAXbyG241gYgV; isg=AoeH6hYPkt3MOhYjRe61MLkkFjuRJJMq0B27x1l0o5Y9yKeKYVzrvsWCHL5t'
+    #cookies = '_med=dw:1600&dh:900&pw:1600&ph:900&ist:0; x=__ll%3D-1%26_ato%3D0; l=AhcXMoGA5GniABQ4jXT6W5O4J5BhWuuP; swfstore=30363; sm4=310115; _m_h5_tk=579f13b283d2aa2a4875b661ef4cc54f_1508221649830; _m_h5_tk_enc=d136a04b8da748c167595ef8baffac7e; hng=CN%7Czh-CN%7CCNY%7C156;uc1=cookie14=UoTcBz3OBAjZQg%3D%3D&lng=zh_CN&cookie16=URm48syIJ1yk0MX2J7mAAEhTuw%3D%3D&existShop=false&cookie21=W5iHLLyFe3xm&tag=8&cookie15=URm48syIIVrSKA%3D%3D&pas=0; uc3=sg2=BxJP6B4LIzYp%2BV%2FeLdBOLaNf0NmeFCORECuWx8Ma3M8%3D&nk2=D8rrz16wbO1El74%3D&id2=UUBYjOisWsBJ&vt3=F8dBzLBNVq%2B14hz%2BJK0%3D&lg2=U%2BGCWk%2F75gdr5Q%3D%3D; tracknick=liminglives; _l_g_=Ug%3D%3D; ck1=; unb=280885558; lgc=liminglives; cookie1=UteENoRLXAOT%2BQe4R3C3NjlYJE5myu%2FmfsWEhtDjoqc%3D; login=true;cookie17=UUBYjOisWsBJ; cookie2=7eb13bd90bd69c6b9c5c3e2ce5d73212; _nk_=liminglives; t=160b81ebbba3d0e1ebf6bdcc3767a4ec; uss=WqOkpW93Iq8F20N8FQL%2FXS2q3vKf4QwND%2FQJ8BvNZCNaCMrbgZVZHlUw4Z0%3D; skt=f5030b2b783b9e69; _tb_token_=8ee51360871d; tt=login.tmall.com; cna=VtDTERQLnmwCAXbyG241gYgV; res=scroll%3A1600*5657-client%3A1600*794-offset%3A1600*5657-screen%3A1600*900;pnm_cku822=098%23E1hvupvUvbpvjvCkvvvvvjiPP2LUAjD8P2zOAjivPmP90j3Cn2596ji8RLK5vpvhphvhH2yCvvBvpvvvKphv8hCvvvvvvhOVphvOvpvvplDvpC9CvvC216CvVvhvvhWNphvOvpvvp1%2FEvpvVpyUUCC%2BOuphvmhCvCj0Z3dZ2mphvLh2RjpmFdcHCjLVxfX9fjovDN%2BLZd3tGVB%2Bu1jZ7%2B3%2BuaoF6D40OwAtd2ezhVTt%2BmB%2Busj7JVcxvX9nr1EuKfvyf8r3l5FGDN5HmafvCvpvVphhvvvvv2QhvCvvvMMG%3D;cq=ccp%3D0; otherx=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0; whl=-1%260%260%260; isg=ArW1YOvwAJEG8GR5q8DHKn9ixDGvmqEHVpspvTfaaSx7DtUA_oJ5FMOMLuTD'
+    cookies = 't=ad0e1fb5cb8330156a17c144afd3e74f; _tb_token_=5ee5c7618d77; cookie2=1b351fe8054879f264b1ec598253a5a5; cna=U7BsErPnxXQCAXbyG25ZYoUK; isg=AsPDNogRns9GRlK7J4T1FfuAUoetkJ859LH_i_WgMyK7tOPWfQjnyqEmWHIB'
+
 
     def __init__(self, start_urls_file=None, *args, **kwargs):
         super(TmallGoodsListSpider, self).__init__()
@@ -91,16 +90,12 @@ class TmallGoodsListSpider(scrapy.Spider):
         self.date = today
         self.date_set = set([today,])
 
-        #self.fout = open('goods.data_failed', 'wb')
-        #self.fieldsname = ['CatId', 'CatName', 'BrandId', 'BrandName', 'ProductName', 'FinancialType', 'BloombergTicker', 'PageNo', 'Title', 'Url', 'Price', 'Sold', 'ShopName', 'ShopId', 'Location']
-        #self.csv_writer = csv.DictWriter(self.fout, self.fieldsname)
-        #self.csv_writer.writeheader()
-        self.fout_raw = open('goods_list_raw.data', 'w')
+        #self.fout_raw = open('goods_list_failed.data', 'w')
 
         #self.cat_brand_file = 'brand_cat_search_all.csv'
-        self.cat_brand_file = 'ls/brand_cat_pc.csv'
+        self.cat_brand_file = 'tmall_goods_list_2017-10-18_1508310434.csv'
         self.ff = open(self.cat_brand_file)
-        self.cat_brand_reader = csv.DictReader(self.ff)
+        self.cat_shop_reader = csv.DictReader(self.ff)
 
 
         self.auto_crawl = True
@@ -112,7 +107,7 @@ class TmallGoodsListSpider(scrapy.Spider):
                     url = url.strip()
                     self.start_urls2.append(url)
             self.cat_brand_dict = {}
-            for row in self.cat_brand_reader:
+            for row in self.cat_shop_reader:
                 cat_id = str(row['CatId'])
                 brand_id = str(row['BrandId'])
                 cat_brand_id = cat_id + "_"+ brand_id
@@ -139,7 +134,7 @@ class TmallGoodsListSpider(scrapy.Spider):
             yield scrapy.Request(
                 url = self.start_urls[0],
                 headers = self.hheaders,
-                #cookies = self.parse_raw_cookie(self.cookies),
+                cookies = self.parse_raw_cookie(self.cookies),
                 callback = self.parse)
         else:
             for url in self.start_urls2:
@@ -176,30 +171,31 @@ class TmallGoodsListSpider(scrapy.Spider):
         #        brand_id_dict[row['BrandId']] = row
         #logging.info('---------- get goods')
 
-        for row in self.cat_brand_reader:
+        for row in self.cat_shop_reader:
 
             cat_id = str(row['CatId'])
-            brand_id = str(row['BrandId'])
+            shop_id = str(row['ShopId'])
+            seller_id = str(row['SellerId'])
 
-            cat_brand_id = cat_id + "_"+ brand_id
-            if cat_brand_id in self.cat_brand_set:
+            cat_shop_id = shop_id + '_' + seller_id
+            if cat_shop_id in self.cat_shop_set: #or seller_id != '725677994':
                 continue
             else:
-                self.cat_brand_set.add(cat_brand_id)
+                self.cat_shop_set.add(cat_shop_id)
 
-            #if brand_id not in brand_id_dict:
-            #    continue
-
-            url = 'https://list.tmall.com/m/search_items.htm?'
-            url += '&brand=' + brand_id
-            if len(cat_id) > 0:
-                url += '&cat=' + cat_id
+            url = 'https://www.m.tmall.com/shop/shop_auction_search.do?a=a'
+            url += '&suid=' + seller_id
+            url += '&shop_id=' + shop_id
+            url += '&p=1'
+            #if len(cat_id) > 0:
+            #    url += '&cat=' + cat_id
 
             req = scrapy.Request(url = url,
                     headers = self.hheaders,
-                    #cookies = self.parse_raw_cookie(self.cookies),
+                    cookies = self.parse_raw_cookie(self.cookies),
                     callback = self.parse_goods_list)
-            req.meta['brand_id'] = brand_id
+            req.meta['shop_id'] = shop_id
+            req.meta['seller_id'] = seller_id
             req.meta['cat_id'] = cat_id
             req.meta['page_no'] = 1
             req.meta['row'] = row
@@ -208,8 +204,8 @@ class TmallGoodsListSpider(scrapy.Spider):
 
 
     def parse_goods_list(self, response):
-        logging.info('1111111111119999999999999999999999999999999999999999')
-        brand_id = response.meta['brand_id']
+        shop_id = response.meta['shop_id']
+        seller_id = response.meta['seller_id']
         cat_id = response.meta['cat_id']
         page_no = response.meta['page_no']
         row = response.meta['row']
@@ -217,52 +213,27 @@ class TmallGoodsListSpider(scrapy.Spider):
         data = unicode(response.body, errors = 'replace')
         j = json.loads(data)
 
-        self.fout_raw.write(json.dumps({'brand_id':brand_id, 'cat_id':cat_id, 'page_no':page_no, 'goods':j}) + "\n")
+        #self.fout_raw.write(json.dumps({'brand_id':brand_id, 'cat_id':cat_id, 'page_no':page_no, 'goods':j}) + "\n")
 
-        for item in j['item']:
-            goods = {} #TmallCatBrandGoodsItem()
+        shop_url = j['shop_Url']
 
-            goods['BrandId'] = brand_id
-            goods['BrandName'] = row['BrandName']
-            goods['CatId'] = cat_id
-            goods['CatName'] = row['CatName']
-            goods['FinancialType'] = row['FinancialType']
-            goods['ProductName'] = row['ProductName']
-            goods['BloombergTicker'] = row['BloombergTicker']
-
-            goods['PageNo'] = page_no
-            goods['Title'] = item['title']
-            goods['Url'] = item['url']
-            goods['Price'] = item['price']
-            goods['Sold'] = item['sold']
-            goods['ShopName'] = item['shop_name']
-            goods['ShopId'] = item['shop_id']
-            goods['RealShopId'] = item['real_shop_id']
-            goods['SellerId'] = item['seller_id']
-            goods['Location'] = item['location']
-
-            #self.csv_writer.writerow(goods)
-            #self.fout.write(json.dumps(goods) + '\n')
-
+        for item in j['items']:
             goods = TmallGoodsItem()
-            goods['BrandId'] = brand_id
+            goods['BrandId'] = row['BrandId']
             goods['BrandName'] = row['BrandName']
             goods['CatId'] = cat_id
             goods['CatName'] = row['CatName']
-            goods['FinancialType'] = row['FinancialType']
-            goods['ProductName'] = row['ProductName']
-            goods['BloombergTicker'] = row['BloombergTicker']
+
+            goods['ShopId'] = shop_id
+            goods['SellerId'] = seller_id
+            goods['ShopUrl'] = shop_url
 
             goods['PageNo'] = page_no
             goods['Title'] = item['title']
             goods['Url'] = item['url']
-            goods['Price'] = item['price']
             goods['Sold'] = item['sold']
-            goods['ShopName'] = item['shop_name']
-            goods['ShopId'] = item['shop_id']
-            goods['RealShopId'] = item['real_shop_id']
-            goods['SellerId'] = item['seller_id']
-            goods['Location'] = item['location']
+            goods['Quantity'] = item['quantity']
+            goods['TotalSoldQuantity'] = item['totalSoldQuantity']
             yield goods
 
 
@@ -271,58 +242,23 @@ class TmallGoodsListSpider(scrapy.Spider):
 
         if page_no < total_page:
             page_no += 1
-            url = 'https://list.tmall.com/m/search_items.htm?style=list&type=p&tmhkh5=&spm=a223j.8443192.a2227oh.d100&from=mallfp..m_1_searchbutton'
-            if len(cat_id) > 0:
-                url += '&cat=' + cat_id
-            url += '&brand=' + brand_id
-            url += '&page_no=' + str(page_no)
+            url = 'https://www.m.tmall.com/shop/shop_auction_search.do?a=a'
+            url += '&suid=' + seller_id
+            url += '&shop_id=' + shop_id
+            url += '&p=' + str(page_no)
+            #if len(cat_id) > 0:
+            #    url += '&cat=' + cat_id
             req = scrapy.Request(url = url,
                     headers = self.hheaders,
-                    #cookies = self.parse_raw_cookie(self.cookies),
+                    cookies = self.parse_raw_cookie(self.cookies),
                     callback = self.parse_goods_list)
-            req.meta['brand_id'] = brand_id
+            req.meta['shop_id'] = shop_id
+            req.meta['seller_id'] = seller_id
             req.meta['cat_id'] = cat_id
             req.meta['page_no'] = page_no
             req.meta['row'] = row
+
             yield req
-
-    def merge_goods(self, goods_list):
-        goods_dict = {}
-        for goods in goods_list:
-            catid = goods['CatId']
-            brandid = goods['BrandId']
-            k = str(brandid) + "_" + str(catid)
-            sold = (goods['Sold'])
-            price = float(goods['Price'])
-            if not sold.isdigit():
-                if sold_wan_unit in sold:
-                    n = sold[:len(sold) - len(sold_wan_unit)]
-                    sold = float(n)
-                    sold = int(sold * 10000)
-                    sold += 500
-                else:
-                    logging.info(goods)
-                    continue
-            else:
-                sold = int(sold)
-            if k in goods_dict:
-                item = goods_dict[k]
-                item['SalesUnit'] += sold
-                item['SalesValue'] += sold * price
-            else:
-                item = TmallGoodsMergedItem()
-                item['BrandId'] = goods['BrandId']
-                item['BrandName'] = goods['BrandName']
-                item['CatId'] = goods['CatId']
-                item['CatName'] = goods['CatName']
-                item['FinancialType'] = goods['FinancialType']
-                item['ProductName'] = goods['ProductName']
-                item['BloombergTicker'] = goods['BloombergTicker']
-                item['SalesUnit'] = sold
-                item['SalesValue'] = sold * price
-                goods_dict[k] = item
-
-        return goods_dict
 
 
 

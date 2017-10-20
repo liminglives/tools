@@ -9,6 +9,7 @@ from scrapy import signals
 import logging
 import hashlib
 import time
+import datetime
 from proxy_pool import ProxyPool
 import logging
 from scrapy.xlib.pydispatch import dispatcher
@@ -38,6 +39,10 @@ class ProxyPoolMiddleware(object):
         self.pool.setDaemon(True)
         self.pool.start()
         dispatcher.connect(self.close, signals.engine_stopped)
+        self.url_status = {}
+        self.failed_url = {}
+        self.max_failed_times = 100
+        self.spider_name = ""
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -45,6 +50,15 @@ class ProxyPoolMiddleware(object):
 
     def close(self):
         self.pool.quit()
+        self.dump_failed_url()
+
+    def dump_failed_url(self):
+        today = datetime.datetime.now().strftime('%F')
+        now = datetime.datetime.now().strftime('%s')
+        fpath = 'failed_url_%s_%s_%s' % (self.spider_name, today, now)
+        with open(fpath, 'w') as f:
+            for url in self.failed_url:
+                f.write(url + "\n")
 
     def set_proxy(self, request):
         proxy = self.pool.get_proxy()
@@ -60,6 +74,8 @@ class ProxyPoolMiddleware(object):
         self.pool.set_proxy_invalid(proxy)
 
     def process_request(self, request, spider):
+        if self.spider_name == "":
+            self.spider_name = spider.name
         request.meta["dont_redirect"] = True
         if 'change_proxy' in request.meta.keys() and request.meta['change_proxy']:
             logging.info('==== change proxy by request: %s', request)
@@ -69,17 +85,31 @@ class ProxyPoolMiddleware(object):
         self.set_proxy(request)
 
     def process_response(self, request, response, spider):
-        if "proxy" in request.meta.keys():
-            logging.info("response: %s %s %s %s,  header:%s" % (str(request.meta["proxy"]), str(response.status), request.url, response.url, str(response.headers)))
-        else:
-            logging.info("response: None %s %s %s, headers:" % (str(response.status), request.url, response.url, str(response.headers)))
+        try:
+            if "proxy" in request.meta.keys():
+                logging.info("response: %s %s %s,  header:%s" % (str(request.meta["proxy"]), str(response.status), request.url, str(response.headers)))
+            else:
+                logging.info("response: None %s %s, headers:%s" % (str(response.status), request.url, str(response.headers)))
+        except:
+            pass
 
         if response.status != 200: #and response.status != 302:
             self.invalid_proxy(request)
+            if response.url in self.failed_url:
+                if self.failed_url[response.url] >= self.max_failed_times:
+                    request.meta['giveup'] = True
+                    #response.meta['giveup'] = True
+                    return response
+
+                self.failed_url[response.url] += 1
+            else:
+                self.failed_url[response.url] = 1
             new_request = request.copy()
             new_request.dont_filter = True
             return new_request
         else:
+            if response.url in self.failed_url:
+                self.failed_url.pop(response.url)
             return response
 
     def process_exception(self, request, exception, spider):
@@ -88,7 +118,9 @@ class ProxyPoolMiddleware(object):
         else:
             logging.info("exception: None %s %s" % (request.url, exception))
 
-        if isinstance(exception, self.DONT_RETRY_ERRORS):
+        if 'giveup' in request.meta.keys() and request.meta['giveup']:
+            pass
+        elif isinstance(exception, self.DONT_RETRY_ERRORS):
             self.invalid_proxy(request)
             new_request = request.copy()
             new_request.dont_filter = True
