@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 2.8)
+
+ PROJECT(rtt_binary)
+ SET(BINFILE src/rtt_binary.cpp src/rtt_binary_main.cpp)
+ SET(PYFILE src/rtt_binary.cpp src/csv_binary.cpp)
+ SET(LIBFILE src/rtt_binary.cpp)
+
+ INCLUDE_DIRECTORIES(./include)
+ INCLUDE_DIRECTORIES(/usr/include/python2.7/)
+ INCLUDE_DIRECTORIES(/usr/lib/python2.7/config-x86_64-linux-gnu/)
+
+
+ SET(CMAKE_CXX_FLAGS "-std=c++11 -g -ftest-coverage -fprofile-arcs -Wno-deprecated")
+
+ ADD_EXECUTABLE(rtt_binary ${BINFILE})
+ ADD_LIBRARY(rtt_binary_a STATIC ${LIBFILE})
+ ADD_LIBRARY(rtt_binary_so SHARED ${PYFILE})
+ SET_TARGET_PROPERTIES(rtt_binary_a PROPERTIES OUTPUT_NAME "rtt_binary")
+ set_target_properties(rtt_binary_so PROPERTIES PREFIX "")
+ SET_TARGET_PROPERTIES(rtt_binary_so PROPERTIES OUTPUT_NAME "csv_binary")
+
+ target_link_libraries(rtt_binary -lssl  )
+ target_link_libraries(rtt_binary -lcrypto)
+ target_link_libraries(rtt_binary -I../../thirdparty/zlib-1.2.8/include/ -L../../thirdparty/zlib-1.2.8/lib/ -lz)
+ target_link_libraries(rtt_binary_a -lssl)
+ target_link_libraries(rtt_binary_a -lcrypto)
+ target_link_libraries(rtt_binary_a -I../../thirdparty/zlib-1.2.8/include/ -L../../thirdparty/zlib-1.2.8/lib/ -lz)
+ target_link_libraries(rtt_binary_so -lssl)
+ target_link_libraries(rtt_binary_so -lcrypto)
+ target_link_libraries(rtt_binary_so -I../../thirdparty/zlib-1.2.8/include/ -L../../thirdparty/zlib-1.2.8/lib/ -lz)
