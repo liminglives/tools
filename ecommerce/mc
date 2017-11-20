@@ -1,0 +1,253 @@
+  1 // Author: Liang Siyu
+   2 // Author: Zhiwei Xiao (zwxiao@gmail.com)
+   3
+   4 #ifndef SRC_SPAN_MARKET_SPAN_H_
+   5 #define SRC_SPAN_MARKET_SPAN_H_
+   6
+   7 #include <string>
+   8
+   9 #include "market_data/base_data.h"
+  10
+  11 #include "util/csv_reader.h"
+  12 #include "util/csv_writer.h"
+  13 #include "util/constant.h"
+  14
+  15 namespace RTT {
+  16 namespace Span {
+  17
+  18 class MarketSpan : public MarketData::BaseData {
+  19  public:
+  20   enum MarketSpanStatus {
+  21     kSpanUnknownStatus = -1,
+  22     kSpanNormal = 1,
+  23     kSpanUpLimit = 2,
+  24     kSpanDownLimit = 3,
+  25     kSpanNoTrade = 4,
+  26   };
+  27  public:
+  28   MarketSpan();
+  29   ~MarketSpan();
+  30
+  31   virtual bool InitFromCsv(const Util::CsvRow& row);
+  32   virtual std::string ToCsvRow() const;
+  33
+  34   virtual void Dump(Util::CsvWriter* writer) const;
+  35
+  36  public:
+  37   friend class MarketSpanCalculator;
+  38
+  39   // Getter
+  40   virtual int64_t vendor_time_usec_epoch() const {
+  41     CHECK(false) << "Invalid function call for Market Span";
+  42     return 0;
+  43   }
+  44
+  45   const std::string& begin_time() const {
+  46     return begin_time_;
+  47   }
+  48
+  49   const std::string& end_time() const {
+  50     return end_time_;
+  51   }
+  52
+  53   int64_t span_begin_epoch_usecond() const {
+  54     return span_begin_epoch_usecond_;
+  55   }
+  56
+  57   const std::string& last_trade_time() const {
+  58     return last_trade_time_;
+  59   }
+  60
+  61   double open_price() const {
+  62     return open_price_;
+  63   }
+  64
+  65   double pre_close_price() const {
+  66     return pre_close_price_;
+  67   }
+  68
+  69   double close_price() const {
+  70     return close_price_;
+  71   }
+  72
+  73   double high_price() const {
+  74     return high_price_;
+  75   }
+  76
+  77   double low_price() const {
+  78     return low_price_;
+  79   }
+  80
+  81   double last_price() const {
+  82     return last_price_;
+  83   }
+  84
+  85   int64_t volume() const {
+  86     return volume_;
+  87   }
+  88
+  89   double dol_volume() const {
+  90     return dol_volume_;
+  91   }
+  92
+  93   int trade_count() const {
+  94     return trade_count_;
+  95   }
+  96
+  97   double open_interest() const {
+  98     return open_interest_;
+  99   }
+ 100
+ 101   int aggr_book_count() const {
+ 102     return aggr_book_count_;
+ 103   }
+ 104
+ 105   double aggr_dolvol() const {
+ 106     return aggr_dolvol_;
+ 107   }
+ 108
+ 109   double avg_aggr() const {
+ 110     return avg_aggr_;
+ 111   }
+ 112
+ 113   double weighted_aggr() const {
+ 114     return weighted_aggr_;
+ 115   }
+ 116
+ 117   int spread_book_count() const {
+ 118     return spread_book_count_;
+ 119   }
+ 120
+ 121   double avg_spread() const {
+ 122     return avg_spread_;
+ 123   }
+ 124
+ 125   MarketSpanStatus status() const {
+ 126     return status_;
+127   }
+ 128
+ 129   int64_t avg_bid_size() const {
+ 130     return avg_bid_size_;
+ 131   }
+ 132
+ 133   int64_t avg_ask_size() const {
+ 134     return avg_ask_size_;
+ 135   }
+ 136
+ 137   int64_t span_epoch_usecond() const {
+ 138     return span_epoch_usecond_;
+ 139   }
+ 140
+ 141
+ 142   // Setter
+ 143   void set_begin_time(const std::string& begin_time) {
+ 144     begin_time_ = begin_time;
+ 145   }
+ 146
+ 147   void set_end_time(const std::string& end_time) {
+ 148     end_time_ = end_time;
+ 149   }
+ 150
+ 151   void set_close_price(double close_price) {
+ 152     close_price_ = close_price;
+ 153   }
+ 154
+ 155   void set_volume(int64_t volume) {
+ 156     volume_ = volume;
+ 157   }
+ 158   void set_dol_volume(double dol_volume) {
+ 159     dol_volume_ = dol_volume;
+ 160   }
+ 161
+ 162   double var05() const {
+ 163     return var05_;
+ 164   }
+ 165
+ 166   double var01() const {
+ 167     return var01_;
+ 168   }
+ 169
+ 170   double var005() const {
+ 171     return var005_;
+ 172   }
+ 173
+ 174   double var002() const {
+ 175     return var002_;
+ 176   }
+ 177
+ 178   double var001() const {
+ 179     return var001_;
+ 180   }
+ 181
+ 182   double basic_open_price() const {
+ 183     return basic_open_price_;
+ 184   }
+ 185
+ 186   double high_util_now() const {
+ 187     return high_util_now_;
+ 188   }
+ 189
+ 190   double low_util_now() const {
+ 191     return low_util_now_;
+ 192   }
+ 193
+ 194   double ex_high_util_now() const {
+ 195     return ex_high_util_now_;
+ 196   }
+ 197
+ 198   double ex_low_util_now() const {
+ 199     return ex_low_util_now_;
+ 200   }
+ 201
+ 202  public:
+ 203   static void DumpHeader(Util::CsvWriter* writer);
+ 204
+ 205  protected:
+ 206   static const std::string kSpanHeader;
+ 207   std::string begin_time_;
+ 208   std::string end_time_;
+ 209   std::string last_trade_time_;
+ 210   double open_price_;
+ 211   double pre_close_price_;
+ 212   double close_price_;
+ 213   double high_price_;
+ 214   double low_price_;
+ 215   double last_price_;
+ 216   double dol_volume_;
+ 217   int64_t span_begin_epoch_usecond_;
+ 218   int64_t span_epoch_usecond_;
+ 219   int64_t today_last_book_usecond_;
+ 220   int64_t volume_;
+ 221   int64_t cum_volume_util_this_;
+ 222   double cum_dolvol_util_this_;
+ 223   int cum_trade_count_util_this_;
+ 224   int trade_count_;
+ 225   int aggr_book_count_;
+ 226   int spread_book_count_;
+ 227   double aggr_dolvol_;
+ 228   double avg_aggr_;
+ 229   double weighted_aggr_;
+ 230   double avg_spread_;
+ 231   double open_interest_;
+ 232   double var05_;
+ 233   double var01_;
+ 234   double var005_;
+ 235   double var002_;
+ 236   double var001_;
+ 237
+ 238   double basic_open_price_;
+ 239   double high_util_now_;
+ 240   double low_util_now_;
+ 241   double ex_high_util_now_;
+ 242   double ex_low_util_now_;
+ 243
+ 244   int64_t avg_bid_size_;
+ 245   int64_t avg_ask_size_;
+ 246   MarketSpanStatus status_;
+ 247   bool usable_flag_;
+ 248 };
+ 249
+ 250 }  // namespace Span
+ 251 }  // namespace RTT
+ 252
+#endif

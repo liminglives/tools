@@ -1,0 +1,127 @@
+   1 // market span calcualtor class
+   2
+   3 // author : hhp (Hongpeng Huo)
+   4
+   5 #ifndef SPAN_MARKET_SPAN_CALCULATOR_H_
+   6 #define SPAN_MARKET_SPAN_CALCULATOR_H_
+   7
+   8 #include <string>
+   9 #include <unordered_map>
+  10
+  11 #include "util/observer.h"
+  12 #include "util/subject.h"
+  13 #include "util/csv_reader.h"
+  14
+  15 namespace RTT {
+  16
+  17 namespace Util {
+  18 class Subject;
+  19 class CsvWriter;
+  20 }
+  21
+  22 namespace MarketData {
+  23 class BookDataUpdater;
+  24 }
+  25
+  26 namespace Span {
+  27
+  28 class MarketSpan;
+  29 class MarketSpanCalculator : public Util::Observer {
+  30  public:
+  31   MarketSpanCalculator(int rtid, const std::string& uid,
+  32                        MarketData::BookDataUpdater* book_updater);
+  33   ~MarketSpanCalculator();
+  34
+  35   bool Recovery(int64_t last_span_epoch_usecond);
+  36   bool Init();
+  37   void Update(Util::NotifyTypeEnum notify_type, Util::Subject* subject);
+  38   bool InitLoadFromCsv(const Util::CsvRow& row);
+  39   MarketSpan* CalculateSpan(const std::string& current_datetime,
+  40                 int64_t current_epoch_usecond);
+  41   void InsertSpan(const MarketSpan* span);
+  42
+  43   const std::string& last_span_end_time() const {
+  44     return last_span_end_time_;
+  45   }
+  46
+  47   int rtid() const {
+  48     return rtid_;
+  49   }
+  50  private:
+  51   int64_t VendorTimeToEpochUsecond(const std::string& vendor_time);
+  52   void HandleMarketData(const MarketData::BookDataUpdater* book_updater);
+  53   void HandleStockBookData(const MarketData::BookDataUpdater* book_updater);
+  54   void HandleFutureBookData(const MarketData::BookDataUpdater* book_updater);
+  55   void HandleComdtyBookData(const MarketData::BookDataUpdater* book_updater);
+  56   void BookVarCalculate(double last_price, int64_t epoch_usecond);
+  57   bool LongSpanOpenPrice(double* open_price);
+  58   bool LongSpanClosePrice(double* close_price);
+  59   void LongSpanClearData();
+  60   void LongSpanInsertPrice(int64_t time, double price);
+  61
+  62   std::string uid_;
+  63   std::string dump_dir_;
+  64   std::string am_open_;
+  65   std::string am_close_;
+  66   std::string pm_open_;
+  67   std::string pm_close_;
+  68   std::string last_span_end_time_;
+  69   std::string last_vendor_time_;
+  70
+  71   int am_open_hour_;
+  72   int am_open_minute_;
+  73   int64_t am_open_epoch_usecond_;
+  74   int64_t am_close_epoch_usecond_;
+  75   int64_t pm_open_epoch_usecond_;
+  76   int64_t pm_close_epoch_usecond_;
+  77   int64_t last_span_cum_volume_;
+  78   int64_t last_span_epoch_usecond_;
+  79   int64_t last_epoch_usecond_;
+  80   double last_span_cum_dolvol_;
+  81
+  82   double last_span_open_;
+  83   double last_span_close_;
+  84   double last_span_high_;
+  85   double last_span_low_;
+  86   double last_close_;
+  87
+  88   Util::CsvWriter* writer_;
+  89   MarketData::BookDataUpdater* book_updater_;
+  90
+  91   MarketSpan* span_;
+  92
+  93   int rtid_;
+  94   int last_span_trade_count_;
+  95   double last_span_open_interest_;
+  96   int book_data_count_;
+  97   int64_t bid_size_sum_;
+  98   int64_t ask_size_sum_;
+  99   bool span_open_;
+ 100   bool rest_time_;
+ 101   bool span_inited_;
+ 102   bool long_span_;
+ 103   int aggr_book_data_count_;
+ 104   int spread_book_data_count_;
+ 105   int64_t book_cum_volume_;
+ 106   double book_cum_dolvol_;
+ 107   double aggr_sum_;
+ 108   double aggr_dolvol_aggr_sum_;
+ 109   double spread_sum_;
+ 110   double var05_;
+ 111   double var01_;
+ 112   double var005_;
+ 113   double var002_;
+ 114   double var001_;
+ 115   double high_util_now_;
+ 116   double low_util_now_;
+ 117   double ex_high_util_now_;
+ 118   double ex_low_util_now_;
+ 119   double pre_close_price_;
+ 120   std::vector<double> price_vec_;
+ 121   std::vector<int64_t> market_time_vec_;
+ 122   std::unordered_map<int64_t, const MarketSpan*> span_map_;
+ 123 };
+ 124
+ 125 }  // namespace Span
+ 126 }  // namespace RTT
+ 128 #endif // SRC_MARKET_DATA_MARKET_SPAN_CALCULATOR_H_
